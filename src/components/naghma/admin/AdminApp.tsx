@@ -1,0 +1,236 @@
+'use client'
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check } from 'lucide-react'
+import { useNavStore, type PageId } from '@/lib/stores/nav-store'
+import { adminCheck, adminLogout, adminFetchSongs, adminCreateSong, adminUpdateSong, adminDeleteSong, adminFetchArtists, adminFetchCategories, adminCreateCategory, adminDeleteCategory, adminUpdateCategory } from '@/lib/api-client'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
+import type { ApiSong } from '@/lib/types'
+
+const SUB_PAGES: PageId[] = ['admin-dashboard', 'admin-songs', 'admin-add-song', 'admin-artists', 'admin-categories']
+
+export function AdminApp() {
+  const page = useNavStore((s) => s.page)
+  const navigate = useNavStore((s) => s.navigate)
+  const [authed, setAuthed] = useState<boolean | null>(null)
+  useEffect(() => { adminCheck().then(setAuthed) }, [])
+  useEffect(() => { if (authed === false) navigate('admin-login') }, [authed, navigate])
+  if (authed === null) return <div className="flex min-h-screen flex-col items-center justify-center gap-3"><Loader2 className="h-8 w-8 animate-spin text-primary" /><p className="text-xs text-muted-foreground">جارٍ التحقق...</p></div>
+  if (!authed) return null
+  const handleLogout = async () => { await adminLogout(); toast.success('تم تسجيل الخروج'); navigate('home') }
+  return (
+    <div className="min-h-screen flex flex-col">
+      <header className="glass-strong sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border/40 px-3 py-3 safe-top">
+        <div className="flex items-center gap-2"><div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-purple"><Shield className="h-4 w-4 text-white" /></div><div><p className="text-xs font-bold leading-tight">لوحة الإدارة</p><p className="text-[10px] text-muted-foreground">مساعد MusiX</p></div></div>
+        <div className="flex items-center gap-1"><Button onClick={() => navigate('home')} size="sm" variant="ghost" className="rounded-full text-xs"><Home className="h-4 w-4 ml-1" />التطبيق</Button><Button onClick={handleLogout} size="sm" variant="ghost" className="rounded-full text-destructive text-xs"><LogOut className="h-4 w-4 ml-1" />خروج</Button></div>
+      </header>
+      <nav className="no-scrollbar sticky top-[57px] z-20 flex gap-1 overflow-x-auto border-b border-border/40 bg-card/30 px-2 py-2">
+        {SUB_PAGES.map((p) => { const active = page === p || (page === 'admin-edit-song' && p === 'admin-songs'); return <button key={p} onClick={() => navigate(p)} className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs tap-scale ${active ? 'gradient-purple text-white' : 'bg-card/50 text-muted-foreground'}`}>{iconFor(p)}{labelFor(p)}</button> })}
+      </nav>
+      <main className="flex-1 px-3 pb-10 pt-3">
+        {page === 'admin-dashboard' && <DashboardView />}
+        {(page === 'admin-songs' || page === 'admin-edit-song') && <SongsView />}
+        {page === 'admin-add-song' && <AddSongView />}
+        {page === 'admin-artists' && <ArtistsView />}
+        {page === 'admin-categories' && <CategoriesView />}
+      </main>
+    </div>
+  )
+}
+
+function iconFor(p: PageId) { return p === 'admin-dashboard' ? <LayoutDashboard className="h-3.5 w-3.5" /> : p === 'admin-songs' ? <Music2 className="h-3.5 w-3.5" /> : p === 'admin-add-song' ? <Plus className="h-3.5 w-3.5" /> : p === 'admin-artists' ? <Users className="h-3.5 w-3.5" /> : <Tags className="h-3.5 w-3.5" /> }
+function labelFor(p: PageId) { return p === 'admin-dashboard' ? 'الرئيسية' : p === 'admin-songs' ? 'الأغاني' : p === 'admin-add-song' ? 'إضافة أغنية' : p === 'admin-artists' ? 'الفنانون' : 'التصنيفات' }
+
+function DashboardView() {
+  const navigate = useNavStore((s) => s.navigate)
+  const { data: songs } = useQuery({ queryKey: ['admin-songs'], queryFn: adminFetchSongs })
+  const { data: artists } = useQuery({ queryKey: ['admin-artists'], queryFn: adminFetchArtists })
+  const { data: categories } = useQuery({ queryKey: ['admin-categories'], queryFn: adminFetchCategories })
+  const published = songs?.filter((s) => s.published).length || 0
+  const unpublished = songs?.filter((s) => !s.published).length || 0
+  const featured = songs?.filter((s) => s.featured).length || 0
+  const totalPlays = songs?.reduce((sum, s) => sum + s.playCount, 0) || 0
+  const latest = songs?.slice(0, 5) || []
+  return (
+    <div className="space-y-4">
+      <h1 className="text-lg font-bold">مرحبًا بك في لوحة الإدارة</h1>
+      <div className="grid grid-cols-2 gap-2">
+        <StatCard label="إجمالي الأغاني" value={songs?.length ?? '...'} icon={<Music2 className="h-5 w-5" />} />
+        <StatCard label="الأغاني المنشورة" value={published} icon={<Eye className="h-5 w-5" />} />
+        <StatCard label="غير المنشورة" value={unpublished} icon={<EyeOff className="h-5 w-5" />} />
+        <StatCard label="الأغاني المميزة" value={featured} icon={<Star className="h-5 w-5" />} />
+        <StatCard label="إجمالي الفنانين" value={artists?.length ?? '...'} icon={<Users className="h-5 w-5" />} />
+        <StatCard label="إجمالي التصنيفات" value={categories?.length ?? '...'} icon={<Tags className="h-5 w-5" />} />
+      </div>
+      <div className="rounded-2xl gradient-purple p-4 text-white"><p className="text-xs opacity-90">إجمالي الاستماعات</p><p className="text-3xl font-extrabold">{totalPlays.toLocaleString('ar-EG')}</p></div>
+      <div><h2 className="mb-2 text-sm font-semibold">إجراءات سريعة</h2><div className="grid grid-cols-2 gap-2"><ActionCard icon={<Plus className="h-5 w-5" />} label="إضافة أغنية جديدة" onClick={() => navigate('admin-add-song')} /><ActionCard icon={<Music2 className="h-5 w-5" />} label="إدارة الأغاني" onClick={() => navigate('admin-songs')} /><ActionCard icon={<Users className="h-5 w-5" />} label="إدارة الفنانين" onClick={() => navigate('admin-artists')} /><ActionCard icon={<Tags className="h-5 w-5" />} label="إدارة التصنيفات" onClick={() => navigate('admin-categories')} /></div></div>
+      {latest.length > 0 && <div><h2 className="mb-2 text-sm font-semibold">أحدث الأغاني المضافة</h2><div className="space-y-1">{latest.map((s) => <div key={s.id} className="flex items-center gap-2 rounded-xl bg-card/40 p-2"><span className={`h-2 w-2 rounded-full ${s.published ? 'bg-green-500' : 'bg-yellow-500'}`} /><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{s.title}</p><p className="truncate text-[10px] text-muted-foreground">{s.artistName || 'غير معروف'}</p></div><span className="text-[10px] text-muted-foreground">{s.playCount} استماع</span></div>)}</div></div>}
+      <div className="rounded-2xl border border-border/40 bg-card/30 p-3 text-xs text-muted-foreground"><AlertCircle className="mb-1 h-4 w-4 text-primary" /><p>عند إضافة أغنية جديدة ونشرها، تظهر فورًا للمستخدمين دون إعادة بناء التطبيق.</p></div>
+    </div>
+  )
+}
+function StatCard({ label, value, icon }: { label: string; value: any; icon: React.ReactNode }) { return <div className="rounded-2xl border border-border/40 bg-card/40 p-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 text-primary">{icon}</div><p className="mt-2 text-2xl font-extrabold">{value}</p><p className="text-[10px] text-muted-foreground">{label}</p></div> }
+function ActionCard({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) { return <button onClick={onClick} className="flex flex-col items-start gap-2 rounded-2xl border border-border/40 bg-card/40 p-3 text-right tap-scale hover:border-primary"><div className="flex h-9 w-9 items-center justify-center rounded-xl gradient-purple text-white">{icon}</div><p className="text-xs font-semibold">{label}</p></button> }
+
+function SongsView() {
+  const navigate = useNavStore((s) => s.navigate)
+  const params = useNavStore((s) => s.params)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'unpublished' | 'featured'>('all')
+  const queryClient = useQueryClient()
+  const { data: songs, isLoading } = useQuery({ queryKey: ['admin-songs'], queryFn: adminFetchSongs })
+  const filtered = (songs || []).filter((s) => { if (search) { const q = search.toLowerCase(); const hay = (s.title + ' ' + (s.artistName || '') + ' ' + (s.categoryName || '')).toLowerCase(); if (!hay.includes(q)) return false } if (statusFilter === 'published' && !s.published) return false; if (statusFilter === 'unpublished' && s.published) return false; if (statusFilter === 'featured' && !s.featured) return false; return true })
+  const handleTogglePublish = async (song: ApiSong) => { try { await adminUpdateSong(song.id, { published: !song.published }); toast.success(song.published ? 'أُلغي النشر' : 'تم النشر'); queryClient.invalidateQueries({ queryKey: ['admin-songs'] }); queryClient.invalidateQueries({ queryKey: ['home'] }); queryClient.invalidateQueries({ queryKey: ['songs'] }) } catch (e: any) { toast.error(e.message) } }
+  const handleDelete = async (song: ApiSong) => { if (!confirm(`حذف "${song.title}" نهائيًا؟`)) return; try { await adminDeleteSong(song.id); toast.success('تم حذف الأغنية'); queryClient.invalidateQueries({ queryKey: ['admin-songs'] }); queryClient.invalidateQueries({ queryKey: ['home'] }); queryClient.invalidateQueries({ queryKey: ['songs'] }) } catch (e: any) { toast.error(e.message) } }
+  if (params.songId) { const song = songs?.find((s) => s.id === params.songId); if (song) return <EditSongView song={song} /> }
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between"><h1 className="text-lg font-bold">إدارة الأغاني</h1><Button onClick={() => navigate('admin-add-song')} size="sm" className="rounded-full gradient-purple text-white"><Plus className="h-4 w-4 ml-1" />إضافة</Button></div>
+      <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="بحث بالاسم أو الفنان..." className="h-10 rounded-2xl" />
+      <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}><SelectTrigger className="h-10 rounded-2xl"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">الكل</SelectItem><SelectItem value="published">منشورة</SelectItem><SelectItem value="unpublished">غير منشورة</SelectItem><SelectItem value="featured">مميزة</SelectItem></SelectContent></Select>
+      <div className="text-xs text-muted-foreground">{filtered.length} أغنية</div>
+      {isLoading ? <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : filtered.length === 0 ? <p className="py-8 text-center text-sm text-muted-foreground">لا توجد أغانٍ مطابقة</p> : (
+        <div className="space-y-1">{filtered.map((s) => <div key={s.id} className="group flex items-center gap-2 rounded-xl bg-card/40 p-2"><span className={`h-2 w-2 shrink-0 rounded-full ${s.published ? 'bg-green-500' : 'bg-yellow-500'}`} /><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{s.title}</p><p className="truncate text-[10px] text-muted-foreground">{s.artistName || 'غير معروف'} {s.featured ? ' · مميزة' : ''} · {s.playCount} استماع</p></div><button onClick={() => handleTogglePublish(s)} className="rounded-full p-1.5 text-muted-foreground tap-scale hover:bg-accent" aria-label="تبديل النشر">{s.published ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}</button><button onClick={() => navigate('admin-edit-song', { songId: s.id })} className="rounded-full p-1.5 text-muted-foreground tap-scale hover:bg-accent" aria-label="تعديل"><Pencil className="h-4 w-4" /></button><button onClick={() => handleDelete(s)} className="rounded-full p-1.5 text-destructive tap-scale hover:bg-destructive/10" aria-label="حذف"><Trash2 className="h-4 w-4" /></button></div>)}</div>
+      )}
+    </div>
+  )
+}
+
+function AddSongView() {
+  const navigate = useNavStore((s) => s.navigate)
+  const queryClient = useQueryClient()
+  const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: adminFetchCategories })
+  const { data: artists } = useQuery({ queryKey: ['admin-artists'], queryFn: adminFetchArtists })
+  const [form, setForm] = useState({ title: '', artistName: '', albumTitle: '', audioUrl: '', coverUrl: '', categoryName: '', description: '', lyrics: '', duration: '', keywords: '', published: true, featured: false, rights: '' })
+  const [saving, setSaving] = useState(false)
+  const set = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.title.trim()) { toast.error('اسم الأغنية مطلوب'); return }
+    if (!form.audioUrl.trim()) { toast.error('رابط MP3 مطلوب'); return }
+    try { new URL(form.audioUrl) } catch { toast.error('رابط صوت غير صالح'); return }
+    setSaving(true)
+    try {
+      await adminCreateSong({ title: form.title.trim(), artistName: form.artistName.trim() || undefined, albumTitle: form.albumTitle.trim() || undefined, audioUrl: form.audioUrl.trim(), coverUrl: form.coverUrl.trim() || undefined, categoryName: form.categoryName.trim() || undefined, description: form.description.trim() || undefined, lyrics: form.lyrics.trim() || undefined, duration: form.duration ? parseInt(form.duration) : undefined, keywords: form.keywords.split(/[،,]/).map((k) => k.trim()).filter(Boolean), published: form.published, featured: form.featured, rights: form.rights.trim() || undefined })
+      toast.success('تمت إضافة الأغنية بنجاح')
+      queryClient.invalidateQueries({ queryKey: ['admin-songs'] }); queryClient.invalidateQueries({ queryKey: ['home'] }); queryClient.invalidateQueries({ queryKey: ['songs'] })
+      navigate('admin-songs')
+    } catch (e: any) { toast.error(e.message || 'فشل حفظ الأغنية') }
+    finally { setSaving(false) }
+  }
+  return (
+    <div className="space-y-4 pb-10">
+      <div className="flex items-center gap-2"><button onClick={() => navigate('admin-songs')} className="text-xs text-muted-foreground"><ChevronRight className="h-4 w-4 inline" />الأغاني</button><h1 className="text-lg font-bold">إضافة أغنية جديدة</h1></div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <Field label="اسم الأغنية *" required><Input value={form.title} onChange={(e) => set('title', e.target.value)} className="h-11" required /></Field>
+        <Field label="اسم الفنان"><Input value={form.artistName} onChange={(e) => set('artistName', e.target.value)} list="artists-list" className="h-11" /><datalist id="artists-list">{artists?.map((a) => <option key={a.id} value={a.name} />)}</datalist></Field>
+        <Field label="رابط MP3 المباشر *" required><Input value={form.audioUrl} onChange={(e) => set('audioUrl', e.target.value)} dir="ltr" className="h-11 text-left" required /></Field>
+        <Field label="رابط صورة الغلاف"><Input value={form.coverUrl} onChange={(e) => set('coverUrl', e.target.value)} dir="ltr" className="h-11 text-left" /></Field>
+        <Field label="القسم الموسيقي"><Select value={form.categoryName} onValueChange={(v) => set('categoryName', v === '__none' ? '' : v)}><SelectTrigger className="h-11"><SelectValue placeholder="اختر" /></SelectTrigger><SelectContent><SelectItem value="__none">بدون تصنيف</SelectItem>{categories?.map((c) => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></Field>
+        <Field label="اسم الألبوم (اختياري)"><Input value={form.albumTitle} onChange={(e) => set('albumTitle', e.target.value)} className="h-11" /></Field>
+        <Field label="المدة (بالثواني - اختياري)"><Input value={form.duration} onChange={(e) => set('duration', e.target.value)} type="number" className="h-11" /></Field>
+        <Field label="الوصف (اختياري)"><Textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={2} /></Field>
+        <Field label="كلمات الأغنية (اختياري)"><Textarea value={form.lyrics} onChange={(e) => set('lyrics', e.target.value)} rows={4} /></Field>
+        <Field label="الكلمات المفتاحية (افصل بفواصل)"><Input value={form.keywords} onChange={(e) => set('keywords', e.target.value)} className="h-11" /></Field>
+        <Field label="حالة النشر"><Switch checked={form.published} onCheckedChange={(c) => set('published', c)} /></Field>
+        <Field label="جعل الأغنية مميزة"><Switch checked={form.featured} onCheckedChange={(c) => set('featured', c)} /></Field>
+        <Field label="معلومات الحقوق / المصدر"><Input value={form.rights} onChange={(e) => set('rights', e.target.value)} className="h-11" /></Field>
+        <Button type="submit" disabled={saving} className="h-12 w-full rounded-2xl gradient-purple text-white text-sm font-bold tap-scale">{saving ? <Loader2 className="h-5 w-5 animate-spin ml-2" /> : <Check className="h-5 w-5 ml-2" />}{saving ? 'جارٍ الحفظ...' : 'إضافة الأغنية إلى التطبيق'}</Button>
+      </form>
+    </div>
+  )
+}
+
+function EditSongView({ song }: { song: ApiSong }) {
+  const navigate = useNavStore((s) => s.navigate)
+  const queryClient = useQueryClient()
+  const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: adminFetchCategories })
+  const [form, setForm] = useState({ title: song.title, artistName: song.artistName || '', albumTitle: song.albumTitle || '', audioUrl: song.audioUrl, coverUrl: song.coverUrl || '', categoryName: song.categoryName || '', description: song.description || '', lyrics: song.lyrics || '', duration: song.duration ? String(song.duration) : '', keywords: song.keywords.join('، '), published: song.published, featured: song.featured, rights: song.rights || '' })
+  const [saving, setSaving] = useState(false)
+  const set = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); setSaving(true)
+    try {
+      await adminUpdateSong(song.id, { title: form.title.trim(), artistName: form.artistName.trim(), albumTitle: form.albumTitle.trim(), audioUrl: form.audioUrl.trim(), coverUrl: form.coverUrl.trim(), categoryName: form.categoryName, description: form.description.trim(), lyrics: form.lyrics.trim(), duration: form.duration ? parseInt(form.duration) : undefined, keywords: form.keywords.split(/[،,]/).map((k) => k.trim()).filter(Boolean), published: form.published, featured: form.featured, rights: form.rights.trim() })
+      toast.success('تم تحديث الأغنية')
+      queryClient.invalidateQueries({ queryKey: ['admin-songs'] }); queryClient.invalidateQueries({ queryKey: ['home'] }); queryClient.invalidateQueries({ queryKey: ['songs'] })
+      navigate('admin-songs')
+    } catch (e: any) { toast.error(e.message) } finally { setSaving(false) }
+  }
+  return (
+    <div className="space-y-4 pb-10">
+      <div className="flex items-center gap-2"><button onClick={() => navigate('admin-songs')} className="text-xs text-muted-foreground"><ChevronRight className="h-4 w-4 inline" />الأغاني</button><h1 className="text-lg font-bold">تعديل الأغنية</h1></div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <Field label="اسم الأغنية *" required><Input value={form.title} onChange={(e) => set('title', e.target.value)} className="h-11" required /></Field>
+        <Field label="اسم الفنان"><Input value={form.artistName} onChange={(e) => set('artistName', e.target.value)} className="h-11" /></Field>
+        <Field label="رابط MP3 *" required><Input value={form.audioUrl} onChange={(e) => set('audioUrl', e.target.value)} dir="ltr" className="h-11 text-left" required /></Field>
+        <Field label="رابط صورة الغلاف"><Input value={form.coverUrl} onChange={(e) => set('coverUrl', e.target.value)} dir="ltr" className="h-11 text-left" /></Field>
+        <Field label="القسم الموسيقي"><Select value={form.categoryName || '__none'} onValueChange={(v) => set('categoryName', v === '__none' ? '' : v)}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="__none">بدون تصنيف</SelectItem>{categories?.map((c) => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></Field>
+        <Field label="اسم الألبوم"><Input value={form.albumTitle} onChange={(e) => set('albumTitle', e.target.value)} className="h-11" /></Field>
+        <Field label="المدة (ثوانٍ)"><Input value={form.duration} onChange={(e) => set('duration', e.target.value)} type="number" className="h-11" /></Field>
+        <Field label="الوصف"><Textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={2} /></Field>
+        <Field label="الكلمات"><Textarea value={form.lyrics} onChange={(e) => set('lyrics', e.target.value)} rows={4} /></Field>
+        <Field label="الكلمات المفتاحية"><Input value={form.keywords} onChange={(e) => set('keywords', e.target.value)} className="h-11" /></Field>
+        <Field label="حالة النشر"><Switch checked={form.published} onCheckedChange={(c) => set('published', c)} /></Field>
+        <Field label="مميزة"><Switch checked={form.featured} onCheckedChange={(c) => set('featured', c)} /></Field>
+        <Field label="الحقوق/المصدر"><Input value={form.rights} onChange={(e) => set('rights', e.target.value)} className="h-11" /></Field>
+        <div className="flex gap-2"><Button type="submit" disabled={saving} className="flex-1 h-12 rounded-2xl gradient-purple text-white">{saving ? <Loader2 className="h-5 w-5 animate-spin ml-2" /> : <Check className="h-5 w-5 ml-2" />}حفظ التعديلات</Button><Button type="button" onClick={() => navigate('admin-songs')} variant="outline" className="rounded-2xl">إلغاء</Button></div>
+      </form>
+    </div>
+  )
+}
+
+function Field({ label, required, help, children }: { label: string; required?: boolean; help?: string; children: React.ReactNode }) { return <div><Label className="mb-1.5 block text-sm flex items-center gap-1">{label}{required && <span className="text-destructive">*</span>}</Label>{children}{help && <p className="mt-1 text-[10px] text-muted-foreground">{help}</p>}</div> }
+
+function ArtistsView() {
+  const { data: artists, isLoading } = useQuery({ queryKey: ['admin-artists'], queryFn: adminFetchArtists })
+  return <div className="space-y-3"><h1 className="text-lg font-bold">إدارة الفنانين</h1><p className="text-xs text-muted-foreground">تُنشأ تلقائيًا عند إضافة أغنية باسم فنان جديد.</p>{isLoading ? <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : artists?.length ? <div className="grid grid-cols-2 gap-2">{artists.map((a) => <div key={a.id} className="rounded-2xl bg-card/40 p-3 text-center"><div className="relative mx-auto h-14 w-14 overflow-hidden rounded-full ring-2 ring-primary/20">{a.image ? <Image src={a.image} alt={a.name} fill sizes="56px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple text-white text-lg font-bold">{a.name.charAt(0)}</div>}</div><p className="mt-2 truncate text-xs font-semibold">{a.name}</p><p className="text-[10px] text-muted-foreground">{a.songCount} أغنية</p></div>)}</div> : <p className="py-8 text-center text-sm text-muted-foreground">لا يوجد فنانون بعد</p>}</div>
+}
+
+function CategoriesView() {
+  const queryClient = useQueryClient()
+  const { data: categories } = useQuery({ queryKey: ['admin-categories'], queryFn: adminFetchCategories })
+  const [showAdd, setShowAdd] = useState(false)
+  const [newCat, setNewCat] = useState({ name: '', description: '', emoji: '', image: '' })
+  const [saving, setSaving] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editCat, setEditCat] = useState({ name: '', description: '', emoji: '', image: '' })
+  const [editSaving, setEditSaving] = useState(false)
+
+  const validateImage = (url: string) => { if (!url.trim()) return true; try { const u = new URL(url.trim()); if (!['http:', 'https:'].includes(u.protocol)) { toast.error('يجب أن يبدأ رابط الصورة بـ http أو https'); return false } return true } catch { toast.error('رابط الصورة غير صالح'); return false } }
+  const invalidateAll = () => { queryClient.invalidateQueries({ queryKey: ['admin-categories'] }); queryClient.invalidateQueries({ queryKey: ['categories'] }); queryClient.invalidateQueries({ queryKey: ['home'] }); queryClient.invalidateQueries({ queryKey: ['category'] }) }
+  const handleAdd = async () => { if (!newCat.name.trim()) { toast.error('الاسم مطلوب'); return } if (!validateImage(newCat.image)) return; setSaving(true); try { await adminCreateCategory({ name: newCat.name.trim(), description: newCat.description.trim() || undefined, emoji: newCat.emoji.trim() || undefined, image: newCat.image.trim() || undefined }); toast.success('تمت إضافة التصنيف'); invalidateAll(); setNewCat({ name: '', description: '', emoji: '', image: '' }); setShowAdd(false) } catch (e: any) { toast.error(e.message) } finally { setSaving(false) } }
+  const handleEdit = async () => { if (!editingId) return; if (!editCat.name.trim()) { toast.error('الاسم مطلوب'); return } if (!validateImage(editCat.image)) return; setEditSaving(true); try { await adminUpdateCategory(editingId, { name: editCat.name.trim(), description: editCat.description.trim() || null, emoji: editCat.emoji.trim() || null, image: editCat.image.trim() || null }); toast.success('تم تعديل التصنيف بنجاح'); invalidateAll(); setEditingId(null) } catch (e: any) { toast.error(e.message) } finally { setEditSaving(false) } }
+  const openEdit = (c: any) => { setEditingId(c.id); setEditCat({ name: c.name, description: c.description || '', emoji: c.emoji || '', image: c.image || '' }) }
+  const handleDelete = async (id: string, name: string) => { if (!confirm(`حذف التصنيف "${name}"؟`)) return; try { await adminDeleteCategory(id); toast.success('تم الحذف'); invalidateAll() } catch (e: any) { toast.error(e.message) } }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between"><h1 className="text-lg font-bold">إدارة التصنيفات</h1><Button onClick={() => setShowAdd(true)} size="sm" className="rounded-full gradient-purple text-white"><Plus className="h-4 w-4 ml-1" />إضافة</Button></div>
+      <p className="text-xs text-muted-foreground">اضغط على زر القلم لتعديل الاسم أو الصورة لأي تصنيف. تنعكس التغييرات فورًا.</p>
+      <div className="space-y-1">{categories?.map((c) => <div key={c.id} className="group flex items-center gap-3 rounded-xl bg-card/40 p-2.5"><div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted ring-1 ring-border/30">{c.image ? <Image src={c.image} alt={c.name} fill sizes="48px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple text-white text-sm font-bold">{c.name.charAt(0)}</div>}</div><div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{c.name}</p><p className="text-[10px] text-muted-foreground">{c.songCount} أغنية</p></div><button onClick={() => openEdit(c)} className="rounded-full p-1.5 text-primary tap-scale hover:bg-primary/10" aria-label="تعديل"><Pencil className="h-4 w-4" /></button><button onClick={() => handleDelete(c.id, c.name)} className="rounded-full p-1.5 text-destructive tap-scale hover:bg-destructive/10" aria-label="حذف"><Trash2 className="h-4 w-4" /></button></div>)}</div>
+      <Dialog open={showAdd} onOpenChange={setShowAdd}><DialogContent><DialogHeader><DialogTitle>إضافة تصنيف جديد</DialogTitle><DialogDescription>سيظهر التصنيف في الصفحة الرئيسية مباشرة.</DialogDescription></DialogHeader><CategoryFormFields data={newCat} onChange={setNewCat} /><DialogFooter><Button variant="outline" onClick={() => setShowAdd(false)}>إلغاء</Button><Button onClick={handleAdd} disabled={saving} className="gradient-purple text-white">{saving ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : null}إضافة</Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={!!editingId} onOpenChange={(o) => { if (!o) setEditingId(null) }}><DialogContent><DialogHeader><DialogTitle>تعديل التصنيف</DialogTitle><DialogDescription>عدّل الاسم أو الصورة أو الرمز. تظهر التغييرات فورًا.</DialogDescription></DialogHeader><CategoryFormFields data={editCat} onChange={setEditCat} /><DialogFooter><Button variant="outline" onClick={() => setEditingId(null)}>إلغاء</Button><Button onClick={handleEdit} disabled={editSaving} className="gradient-purple text-white">{editSaving ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Check className="h-4 w-4 ml-1" />}حفظ التعديلات</Button></DialogFooter></DialogContent></Dialog>
+    </div>
+  )
+}
+
+function CategoryFormFields({ data, onChange }: { data: { name: string; description: string; emoji: string; image: string }; onChange: (v: { name: string; description: string; emoji: string; image: string }) => void }) {
+  return (
+    <div className="space-y-2 py-2">
+      <Field label="اسم التصنيف *" required><Input value={data.name} onChange={(e) => onChange({ ...data, name: e.target.value })} className="h-11" placeholder="مثال: أغاني خليجية" /></Field>
+      <Field label="رابط صورة التصنيف" help="الصق رابط صورة يعبر عن التصنيف."><Input value={data.image} onChange={(e) => onChange({ ...data, image: e.target.value })} dir="ltr" className="h-11 text-left" placeholder="https://example.com/image.jpg" /></Field>
+      {data.image.trim() && <div className="flex items-center gap-3 rounded-xl border border-border/40 bg-card/40 p-2.5"><div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted ring-1 ring-border/30"><Image src={data.image.trim()} alt="معاينة" fill sizes="96px" className="object-cover" unoptimized /></div><div className="min-w-0 flex-1"><p className="text-xs font-semibold">معاينة الصورة</p><p className="truncate text-[10px] text-muted-foreground">{data.name || 'اسم التصنيف'}</p></div></div>}
+      <Field label="رمز تعبيري (احتياطي)" help="يُستخدم إن لم تتوفر صورة"><Input value={data.emoji} onChange={(e) => onChange({ ...data, emoji: e.target.value })} className="h-11" placeholder="🎵" /></Field>
+      <Field label="الوصف (اختياري)"><Textarea value={data.description} onChange={(e) => onChange({ ...data, description: e.target.value })} rows={2} /></Field>
+    </div>
+  )
+}

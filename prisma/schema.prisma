@@ -1,0 +1,133 @@
+// MusiX - Prisma schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id        String   @id @default(cuid())
+  name      String
+  image     String?
+  bio       String?
+  country   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  songs   Song[]
+  albums  Album[]
+}
+
+model Album {
+  id        String   @id @default(cuid())
+  title     String
+  artistId  String?
+  coverUrl  String?
+  year      Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  songs  Song[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  emoji       String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  songs Song[]
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  artistId    String?
+  albumId     String?
+  audioUrl    String
+  coverUrl    String?
+  categoryId  String?
+  description String?
+  lyrics      String?
+  duration    Int?
+  keywords    String?
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  playCount   Int      @default(0)
+  rights      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  artist    Artist?   @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  album     Album?    @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  category  Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  favorites     Favorite[]
+  listenHistory ListenHistory[]
+  playlistSongs PlaylistSong[]
+  @@index([published])
+  @@index([featured])
+  @@index([categoryId])
+  @@index([artistId])
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  coverUrl    String?
+  isPublic    Boolean  @default(true)
+  ownerLabel  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  songs PlaylistSong[]
+}
+
+model PlaylistSong {
+  id         String   @id @default(cuid())
+  playlistId String
+  songId     String
+  order      Int      @default(0)
+  addedAt    DateTime @default(now())
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  @@unique([playlistId, songId])
+  @@index([playlistId])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  deviceLabel String  @default("local")
+  songId     String
+  createdAt  DateTime @default(now())
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+  @@unique([deviceLabel, songId])
+  @@index([deviceLabel])
+}
+
+model ListenHistory {
+  id          String   @id @default(cuid())
+  deviceLabel String   @default("local")
+  songId      String
+  position    Int      @default(0)
+  listenedAt  DateTime @default(now())
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+  @@index([deviceLabel, listenedAt])
+}
+
+model User {
+  id          String   @id @default(cuid())
+  displayName String
+  image       String?
+  preferences String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AppSetting {
+  id    String @id
+  value String
+}
