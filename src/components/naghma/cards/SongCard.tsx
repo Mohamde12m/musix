@@ -43,13 +43,13 @@ export function SongCard({ song, queue, variant = 'default', showFavorite = true
   }
 
   return (
-    <div className={`group relative shrink-0 cursor-pointer rounded-2xl p-2 transition-all tap-scale hover:bg-accent/40 ${isActive ? 'bg-accent/40 ring-1 ring-primary/30' : ''} ${variant === 'compact' ? 'w-32' : 'w-40'}`}>
+    <div onClick={() => navigate('song', { songId: song.id })} className={`group relative shrink-0 cursor-pointer rounded-2xl p-2 transition-all tap-scale hover:bg-accent/40 ${isActive ? 'bg-accent/40 ring-1 ring-primary/30' : ''} ${variant === 'compact' ? 'w-32' : 'w-40'}`}>
       <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted ambient-glow">
         {song.coverUrl ? <Image src={song.coverUrl} alt={song.title} fill sizes="(max-width:640px) 50vw, 20vw" className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Play className="h-8 w-8 text-primary-foreground" /></div>}
-        <button onClick={handlePlay} className="absolute bottom-2 left-2 flex h-10 w-10 items-center justify-center rounded-full gradient-purple text-primary-foreground opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0" aria-label="تشغيل">
+        <button onClick={handlePlay} className="absolute bottom-2 left-2 flex h-10 w-10 items-center justify-center rounded-full gradient-purple text-primary-foreground opacity-100 sm:opacity-0 sm:group-hover:opacity-100 shadow-lg transition-all duration-300 sm:translate-y-2 sm:group-hover:translate-y-0" aria-label="تشغيل">
           {isActive && isPlaying ? <span className="flex items-end gap-0.5 h-3">{[0,200,400].map((d) => <span key={d} className="w-0.5 h-full bg-current wave-bar" style={{ animationDelay: `${d}ms` }} />)}</span> : <Play className="h-5 w-5" fill="currentColor" />}
         </button>
-        {showFavorite && <button onClick={(e) => { e.stopPropagation(); toggleFav(song.id) }} className={`absolute top-2 left-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-md transition-all ${isFav ? 'text-red-500' : 'text-white opacity-0 group-hover:opacity-100'}`} aria-label="مفضلة"><Heart className="h-4 w-4" fill={isFav ? 'currentColor' : 'none'} /></button>}
+        {showFavorite && <button onClick={(e) => { e.stopPropagation(); toggleFav(song.id) }} className={`absolute top-2 left-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 backdrop-blur-md transition-all ${isFav ? 'text-red-500' : 'text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`} aria-label="مفضلة"><Heart className="h-4 w-4" fill={isFav ? 'currentColor' : 'none'} /></button>}
       </div>
       <div className="mt-2 px-1">
         <p className={`truncate text-sm font-semibold ${isActive ? 'text-primary' : ''}`}>{song.title}</p>
