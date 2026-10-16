@@ -95,3 +95,16 @@ export async function adminLogout() { await fetch(`${API}/admin/logout`, { metho
 export async function adminCheck() {
   try { const res = await fetch(`${API}/admin/check`); const j = await res.json(); return !!j.isAdmin } catch { return false }
 }
+
+export async function adminExportBackup(): Promise<any> {
+  return jfetch(`${API}/admin/backup`)
+}
+
+export async function adminImportBackup(data: any): Promise<{ ok: boolean; songs?: number; categories?: number; artists?: number; error?: string }> {
+  try {
+    const res = await fetch(`${API}/admin/backup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+    const j = await res.json()
+    if (!res.ok) return { ok: false, error: j.error }
+    return { ok: true, ...j }
+  } catch (e: any) { return { ok: false, error: e.message } }
+}

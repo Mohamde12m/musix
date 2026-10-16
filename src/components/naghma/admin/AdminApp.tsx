@@ -1,9 +1,9 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check } from 'lucide-react'
+import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check, Download, Upload } from 'lucide-react'
 import { useNavStore, type PageId } from '@/lib/stores/nav-store'
-import { adminCheck, adminLogout, adminFetchSongs, adminCreateSong, adminUpdateSong, adminDeleteSong, adminFetchArtists, adminFetchCategories, adminCreateCategory, adminDeleteCategory, adminUpdateCategory } from '@/lib/api-client'
+import { adminCheck, adminLogout, adminFetchSongs, adminCreateSong, adminUpdateSong, adminDeleteSong, adminFetchArtists, adminFetchCategories, adminCreateCategory, adminDeleteCategory, adminUpdateCategory, adminExportBackup, adminImportBackup } from '@/lib/api-client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -74,6 +74,75 @@ function DashboardView() {
       <div><h2 className="mb-2 text-sm font-semibold">إجراءات سريعة</h2><div className="grid grid-cols-2 gap-2"><ActionCard icon={<Plus className="h-5 w-5" />} label="إضافة أغنية جديدة" onClick={() => navigate('admin-add-song')} /><ActionCard icon={<Music2 className="h-5 w-5" />} label="إدارة الأغاني" onClick={() => navigate('admin-songs')} /><ActionCard icon={<Users className="h-5 w-5" />} label="إدارة الفنانين" onClick={() => navigate('admin-artists')} /><ActionCard icon={<Tags className="h-5 w-5" />} label="إدارة التصنيفات" onClick={() => navigate('admin-categories')} /></div></div>
       {latest.length > 0 && <div><h2 className="mb-2 text-sm font-semibold">أحدث الأغاني المضافة</h2><div className="space-y-1">{latest.map((s) => <div key={s.id} className="flex items-center gap-2 rounded-xl bg-card/40 p-2"><span className={`h-2 w-2 rounded-full ${s.published ? 'bg-green-500' : 'bg-yellow-500'}`} /><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{s.title}</p><p className="truncate text-[10px] text-muted-foreground">{s.artistName || 'غير معروف'}</p></div><span className="text-[10px] text-muted-foreground">{s.playCount} استماع</span></div>)}</div></div>}
       <div className="rounded-2xl border border-border/40 bg-card/30 p-3 text-xs text-muted-foreground"><AlertCircle className="mb-1 h-4 w-4 text-primary" /><p>عند إضافة أغنية جديدة ونشرها، تظهر فورًا للمستخدمين دون إعادة بناء التطبيق.</p></div>
+      <BackupSection />
+    </div>
+  )
+}
+
+// قسم النسخ الاحتياطي والاستعادة
+function BackupSection() {
+  const queryClient = useQueryClient()
+  const [exporting, setExporting] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const handleExport = async () => {
+    setExporting(true)
+    try {
+      const data = await adminExportBackup()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `musix-backup-${new Date().toISOString().split('T')[0]}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      toast.success('تم تنزيل النسخة الاحتياطية')
+    } catch (e: any) { toast.error(e.message) }
+    finally { setExporting(false) }
+  }
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImporting(true)
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      const res = await adminImportBackup(data)
+      if (res.ok) {
+        toast.success(`تمت الاستعادة: ${res.songs || 0} أغنية، ${res.categories || 0} تصنيف، ${res.artists || 0} فنان`)
+        queryClient.invalidateQueries({ queryKey: ['admin-songs'] })
+        queryClient.invalidateQueries({ queryKey: ['admin-categories'] })
+        queryClient.invalidateQueries({ queryKey: ['admin-artists'] })
+        queryClient.invalidateQueries({ queryKey: ['home'] })
+        queryClient.invalidateQueries({ queryKey: ['songs'] })
+        queryClient.invalidateQueries({ queryKey: ['categories'] })
+      } else { toast.error(res.error || 'فشل الاستيراد') }
+    } catch (e: any) { toast.error('ملف غير صالح') }
+    finally { setImporting(false); if (e.target) e.target.value = '' }
+  }
+
+  return (
+    <div>
+      <h2 className="mb-2 text-sm font-semibold">النسخ الاحتياطي والاستعادة</h2>
+      <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-primary/5 p-3">
+        <p className="text-[10px] text-muted-foreground">
+          تُحفظ أغانيك تلقائيًا في نسخة احتياطية بعد كل عملية. إن ضاعت، ستُستعاد تلقائيًا عند فتح التطبيق.
+          يمكنك أيضًا تنزيل نسخة يدويًا أو استعادتها من ملف.
+        </p>
+        <div className="flex gap-2">
+          <Button onClick={handleExport} disabled={exporting} variant="outline" size="sm" className="flex-1 rounded-xl text-xs">
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Download className="h-4 w-4 ml-1" />}
+            تنزيل نسخة
+          </Button>
+          <Button onClick={() => fileRef.current?.click()} disabled={importing} variant="outline" size="sm" className="flex-1 rounded-xl text-xs">
+            {importing ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Upload className="h-4 w-4 ml-1" />}
+            استعادة من ملف
+          </Button>
+          <input ref={fileRef} type="file" accept="application/json,.json" onChange={handleImportFile} className="hidden" />
+        </div>
+      </div>
     </div>
   )
 }

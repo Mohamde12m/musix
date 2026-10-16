@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdmin } from '@/lib/auth'
 import { categoryToApi } from '@/lib/api-helpers'
+import { saveBackupToFile } from '@/app/api/admin/backup/route'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
@@ -29,6 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if ('emoji' in body) data.emoji = body.emoji?.toString?.()?.trim() || null
     if (typeof body.order === 'number') data.order = body.order
     const updated = await db.category.update({ where: { id }, data, include: { _count: { select: { songs: true } } } })
+    await saveBackupToFile()
     return NextResponse.json(categoryToApi(updated))
   } catch (e: any) { console.error('update category error', e); return NextResponse.json({ error: 'تعذر التعديل (قد يكون الاسم مكررًا)' }, { status: 400 }) }
 }
@@ -39,6 +41,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try {
     await db.song.updateMany({ where: { categoryId: id }, data: { categoryId: null } })
     await db.category.delete({ where: { id } })
+    await saveBackupToFile()
     return new NextResponse(null, { status: 204 })
   } catch { return NextResponse.json({ error: 'تعذر الحذف' }, { status: 500 }) }
 }

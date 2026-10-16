@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { songToApi, artistToApi, categoryToApi } from '@/lib/api-helpers'
+import { autoRestoreIfEmpty } from '@/app/api/admin/backup/route'
 
 export async function GET() {
   try {
+    // استعادة تلقائية من النسخة الاحتياطية إن كانت القاعدة فارغة
+    await autoRestoreIfEmpty()
     const [featured, latest, mostPlayed, categories, artists] = await Promise.all([
       db.song.findMany({ where: { published: true, featured: true }, include: { artist: true, album: true, category: true }, orderBy: { createdAt: 'desc' }, take: 8 }),
       db.song.findMany({ where: { published: true }, include: { artist: true, album: true, category: true }, orderBy: { createdAt: 'desc' }, take: 20 }),

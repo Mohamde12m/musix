@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdmin } from '@/lib/auth'
 import { songToApi } from '@/lib/api-helpers'
+import { saveBackupToFile } from '@/app/api/admin/backup/route'
 
 export async function GET() {
   if (!(await isAdmin())) return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
       },
       include: { artist: true, album: true, category: true },
     })
+    await saveBackupToFile()
     return NextResponse.json(songToApi(song))
   } catch (e: any) {
     console.error('create song error', e)
