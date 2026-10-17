@@ -1,0 +1,231 @@
+{
+  "version": 2,
+  "exportedAt": "2026-10-17T01:29:19.631Z",
+  "categories": [
+    {
+      "name": "أغاني مغربية",
+      "slug": "moroccan",
+      "description": "أجمل الأغاني المغربية",
+      "image": "/categories/moroccan.png",
+      "emoji": "🇲🇦",
+      "order": 1
+    },
+    {
+      "name": "راي مغربي وجزائري",
+      "slug": "raii",
+      "description": "أغاني الراي",
+      "image": "/categories/raii.png",
+      "emoji": "🎸",
+      "order": 2
+    },
+    {
+      "name": "أغاني جزائرية",
+      "slug": "algerian",
+      "description": "أفضل الأغاني الجزائرية",
+      "image": "/categories/algerian.png",
+      "emoji": "🇩🇿",
+      "order": 3
+    },
+    {
+      "name": "أغاني شعبية",
+      "slug": "shaabi",
+      "description": "الموسيقى الشعبية",
+      "image": "/categories/shaabi.png",
+      "emoji": "🎭",
+      "order": 4
+    },
+    {
+      "name": "أغاني عربية",
+      "slug": "arabic",
+      "description": "أغاني عربية",
+      "image": "/categories/arabic.png",
+      "emoji": "🌙",
+      "order": 5
+    },
+    {
+      "name": "أغاني رومانسية",
+      "slug": "romantic",
+      "description": "أغانٍ رومانسية",
+      "image": "/categories/romantic.png",
+      "emoji": "💕",
+      "order": 6
+    },
+    {
+      "name": "أغاني حزينة",
+      "slug": "sad",
+      "description": "أغانٍ حزينة",
+      "image": "/categories/sad.png",
+      "emoji": "💧",
+      "order": 7
+    },
+    {
+      "name": "موسيقى هادئة",
+      "slug": "calm",
+      "description": "موسيقى هادئة",
+      "image": "/categories/calm.png",
+      "emoji": "🌙",
+      "order": 8
+    },
+    {
+      "name": "أغاني قديمة",
+      "slug": "classics",
+      "description": "أغاني كلاسيكية",
+      "image": "/categories/classics.png",
+      "emoji": "📼",
+      "order": 9
+    },
+    {
+      "name": "أغاني كلاسيكية",
+      "slug": "classical",
+      "description": "مقطوعات كلاسيكية",
+      "image": "/categories/classical.png",
+      "emoji": "🎼",
+      "order": 10
+    },
+    {
+      "name": "أغاني جديدة",
+      "slug": "new",
+      "description": "أحدث الإضافات",
+      "image": "/categories/new.png",
+      "emoji": "✨",
+      "order": 11
+    },
+    {
+      "name": "حسب المزاج",
+      "slug": "mood",
+      "description": "حسب مزاجك",
+      "image": "/categories/mood.png",
+      "emoji": "🎭",
+      "order": 12
+    }
+  ],
+  "artists": [
+    {
+      "name": "فنان تجريبي",
+      "image": null,
+      "bio": "فنان تجريبي",
+      "country": "المغرب"
+    },
+    {
+      "name": "منيرة تجريبية",
+      "image": null,
+      "bio": "مغنية تجريبية",
+      "country": "الجزائر"
+    },
+    {
+      "name": "ElGrandeToto, Gros Mo",
+      "image": null,
+      "bio": null,
+      "country": null
+    }
+  ],
+  "albums": [],
+  "songs": [
+    {
+      "title": "أغنية تجريبية - MusiX",
+      "artistName": "فنان تجريبي",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80",
+      "categoryName": "أغاني مغربية",
+      "description": "أغنية تجريبية",
+      "lyrics": null,
+      "duration": 372,
+      "keywords": "تجريبي,مغربية",
+      "published": true,
+      "featured": true,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "لحن هادئ",
+      "artistName": "منيرة تجريبية",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1518609878373-06d740f60d80?w=600&q=80",
+      "categoryName": "موسيقى هادئة",
+      "description": "مقطوعة هادئة",
+      "lyrics": null,
+      "duration": 426,
+      "keywords": "هادئ",
+      "published": true,
+      "featured": true,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "نبض الروح",
+      "artistName": "فنان تجريبي",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
+      "categoryName": "أغاني رومانسية",
+      "description": "لحن رومانسي",
+      "lyrics": null,
+      "duration": 348,
+      "keywords": "رومانسي",
+      "published": true,
+      "featured": false,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "أصداء الماضي",
+      "artistName": "منيرة تجريبية",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1496293455970-f8581b77229d?w=600&q=80",
+      "categoryName": "أغاني قديمة",
+      "description": "حنين للماضي",
+      "lyrics": null,
+      "duration": 496,
+      "keywords": "حنين",
+      "published": true,
+      "featured": false,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "ليالي الشرق",
+      "artistName": "فنان تجريبي",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1511670792090-7ece0b935ea7?w=600&q=80",
+      "categoryName": "أغاني عربية",
+      "description": "موسيقى عربية",
+      "lyrics": null,
+      "duration": 292,
+      "keywords": "عربي",
+      "published": true,
+      "featured": true,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "دمعة حزين",
+      "artistName": "منيرة تجريبية",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1517810564824-e9f1db1d1d1d?w=600&q=80",
+      "categoryName": "أغاني حزينة",
+      "description": "لحن حزين",
+      "lyrics": null,
+      "duration": 379,
+      "keywords": "حزين",
+      "published": true,
+      "featured": false,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "Timide",
+      "artistName": "ElGrandeToto, Gros Mo",
+      "albumTitle": null,
+      "audioUrl": "https://music.audiomack.com/hq/elgrandetoto/timide__1774018630.m4a?Expires=1792214885&Signature=ZavkmW3P1beYG7YuMdufo~X2oLbcWnpAZu5yCbnEBEq3TEy7pa5or8sXPu6B5tC6XFocQrk-G4mv0Jv5US~9J7YRbaC3G9PQd9kU4IG1iB-tclKHQnk~NhZAALcNZkKhDbvH4zYxwTQ3ZAAt9JbsGnUHFSbh40243W0xMRfpmt0_&Key-Pair-Id=APKAIKAIRXBA2H7FXITA",
+      "coverUrl": "https://i.audiomack.com/elgrandetoto/f38014b3e9.webp?width=360",
+      "categoryName": "أغاني مغربية",
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": false,
+      "rights": null
+    }
+  ],
+  "playlists": []
+}
