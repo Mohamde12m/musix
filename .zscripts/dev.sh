@@ -151,5 +151,7 @@ start_mini_services
 
 echo "Next.js dev server is running in background (PID: $DEV_PID)."
 echo "Use 'kill $DEV_PID' to stop it."
-disown "$DEV_PID" 2>/dev/null || true
-unset DEV_PID
+
+# أبقِ السكربت يعمل حتى لا تظن المنصة أن الخادم توقف
+# wait ينتظر انتهاء عملية الخادم (تبقى السكربت حيًا)
+wait "$DEV_PID"
