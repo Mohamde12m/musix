@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { isAdmin } from '@/lib/auth'
 import { categoryToApi } from '@/lib/api-helpers'
 import { saveBackupToFile } from '@/app/api/admin/backup/route'
+import { clearHomeCache } from '@/app/api/songs/home/route'
 
 export async function GET() {
   if (!(await isAdmin())) return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
         order: body.order ?? (await db.category.count()) + 1,
       },
     })
-    await saveBackupToFile()
+    await saveBackupToFile(); clearHomeCache()
     return NextResponse.json(categoryToApi({ ...c, _count: { songs: 0 } }))
   } catch { return NextResponse.json({ error: 'تعذر إنشاء التصنيف (قد يكون الاسم مكررًا)' }, { status: 400 }) }
 }

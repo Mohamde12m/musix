@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { isAdmin } from '@/lib/auth'
 import { songToApi } from '@/lib/api-helpers'
 import { saveBackupToFile } from '@/app/api/admin/backup/route'
+import { clearHomeCache } from '@/app/api/songs/home/route'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
@@ -42,7 +43,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       data.categoryId = cat.id
     }
     const updated = await db.song.update({ where: { id }, data, include: { artist: true, album: true, category: true } })
-    await saveBackupToFile()
+    await saveBackupToFile(); clearHomeCache()
     return NextResponse.json(songToApi(updated))
   } catch (e: any) { console.error('update song error', e); return NextResponse.json({ error: 'تعذر التعديل' }, { status: 500 }) }
 }
@@ -50,6 +51,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
   const { id } = await params
-  try { await db.song.delete({ where: { id } }); await saveBackupToFile(); return new NextResponse(null, { status: 204 }) }
+  try { await db.song.delete({ where: { id } }); await saveBackupToFile(); clearHomeCache(); return new NextResponse(null, { status: 204 }) }
   catch { return NextResponse.json({ error: 'تعذر الحذف' }, { status: 500 }) }
 }
