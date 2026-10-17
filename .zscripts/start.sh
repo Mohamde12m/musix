@@ -75,20 +75,17 @@ if [ -f "./next-service-dist/server.js" ]; then
     export NODE_ENV=production
     export PORT="${PORT:-3000}"
     export HOSTNAME="${HOSTNAME:-0.0.0.0}"
-    export DATABASE_URL="${DATABASE_URL:-$DEFAULT_PACKAGED_DATABASE_URL}"
 
-    if [ "$DATABASE_URL" = "$DEFAULT_PACKAGED_DATABASE_URL" ]; then
-        if [ ! -f "$DEFAULT_PACKAGED_DB_PATH" ]; then
-            echo "❌ 未找到打包后的数据库文件 $DEFAULT_PACKAGED_DB_PATH"
-            echo "   为避免生产环境启动到空数据库，启动已终止"
-            exit 1
-        fi
-
-        echo "🗄️  当前使用打包数据库: $DEFAULT_PACKAGED_DB_PATH"
+    # MusiX: استخدم Supabase دائمًا (يتجاوز إعادة ضبط .env إلى SQLite)
+    SUPABASE_URL='postgresql://postgres.ncyixxgurfrrjyvfipga:mohamde12345%23$@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&schema=public'
+    if echo "$DATABASE_URL" | grep -q "^file:" || [ -z "$DATABASE_URL" ]; then
+        export DATABASE_URL="$SUPABASE_URL"
+        echo "🗄️  使用 Supabase 数据库 (覆盖 SQLite)"
     else
         echo "🗄️  当前使用外部指定数据库: $DATABASE_URL"
     fi
-    
+    export ADMIN_PASSWORD="mohamde12345"
+
     # 后台启动 Next.js
     bun server.js &
     NEXT_PID=$!
