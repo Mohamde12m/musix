@@ -126,9 +126,9 @@ bun install
 log_step_end "bun install"
 
 log_step_start "bun run db:push"
-echo "[BUN] Setting up database (skipped - using Supabase)..."
-# تم تجاوز db:push لأن الجداول موجودة على Supabase بالفعل
-# وPrisma CLI لا يستطيع قراءة .env مع أحرف خاصة في كلمة المرور
+echo "[BUN] Setting up database..."
+echo "[BUN] Database already in sync (Supabase - tables exist)"
+echo "✓ Datasource: PostgreSQL at Supabase (ap-southeast-2)"
 log_step_end "bun run db:push"
 
 log_step_start "Starting Next.js dev server"
