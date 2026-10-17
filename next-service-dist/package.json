@@ -3,11 +3,11 @@
   "version": "0.2.1",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
-    "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
+    "dev": "DATABASE_URL='postgresql://postgres.ncyixxgurfrrjyvfipga:mohamde12345%23$@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&schema=public' ADMIN_PASSWORD=mohamde12345 next dev -p 3000 2>&1 | tee dev.log",
+    "build": "DATABASE_URL='postgresql://postgres.ncyixxgurfrrjyvfipga:mohamde12345%23$@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&schema=public' next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "start": "NODE_ENV=production DATABASE_URL='postgresql://postgres.ncyixxgurfrrjyvfipga:mohamde12345%23$@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&schema=public' bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
-    "db:push": "prisma db push --accept-data-loss",
+    "db:push": "DATABASE_URL='postgresql://postgres.ncyixxgurfrrjyvfipga:mohamde12345%23$@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true&schema=public' prisma db push --accept-data-loss || true",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset"
