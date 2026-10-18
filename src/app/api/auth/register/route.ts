@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import crypto from 'crypto'
-import { setUserCookie, createUserSession, bindUserSession } from '@/lib/user-auth'
+import { setUserCookie, createUserToken } from '@/lib/user-auth'
 
 const rid = () => 'c' + crypto.randomBytes(16).toString('hex')
 
@@ -19,9 +19,8 @@ export async function POST(req: NextRequest) {
     if (existing) return NextResponse.json({ error: 'هذا البريد مسجل بالفعل' }, { status: 400 })
     const hashed = crypto.scryptSync(password, email, 64).toString('hex')
     const user = await db.userAccount.create({ data: { id: rid(), email, password: hashed, displayName } })
-    const { token, expires } = createUserSession()
-    bindUserSession(token, user.id)
-    await setUserCookie(token, expires)
+    const token = createUserToken(user.id)
+    await setUserCookie(token, Date.now() + 30 * 24 * 60 * 60 * 1000)
     return NextResponse.json({ ok: true, user: { id: user.id, email: user.email, displayName: user.displayName, balance: user.balance } })
   } catch (e: any) { console.error('register error', e); return NextResponse.json({ error: 'تعذر التسجيل' }, { status: 500 }) }
 }

@@ -2,45 +2,36 @@ import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
 const USER_COOKIE = 'musix_user_session'
-const MAX_AGE = 30 * 24 * 60 * 60 * 1000 // 30 يوم
+const SECRET = process.env.ADMIN_PASSWORD || 'mohamde12345'
 
-// جلسات المستخدمين في الذاكرة: token → userId
-const userSessions = new Map<string, string>()
-;(globalThis as any).__userSessions = userSessions
-
-export function createUserSession(): { token: string; expires: number } {
-  const token = crypto.randomBytes(32).toString('hex')
-  const expires = Date.now() + MAX_AGE
-  // ستحفظ الجلسة بعد تسجيل الدخول (ربط token بـ userId)
-  return { token, expires }
+// إنشاء توكن موقّع يحتوي على userId (JWT مبسّط)
+export function createUserToken(userId: string): string {
+  const payload = Buffer.from(JSON.stringify({ uid: userId, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 })).toString('base64url')
+  const sig = crypto.createHmac('sha256', SECRET).update(payload).digest('base64url')
+  return `${payload}.${sig}`
 }
 
-export function bindUserSession(token: string, userId: string) {
-  userSessions.set(token, userId)
-}
-
-export function validateUserSession(token?: string | null): boolean {
-  if (!token) return false
-  return userSessions.has(token)
-}
-
-export function getUserId(token?: string | null): string | null {
+// التحقق من التوكن واستخراج userId
+export function verifyUserToken(token?: string | null): string | null {
   if (!token) return null
-  return userSessions.get(token) || null
+  try {
+    const [payload, sig] = token.split('.')
+    if (!payload || !sig) return null
+    const expectedSig = crypto.createHmac('sha256', SECRET).update(payload).digest('base64url')
+    if (sig !== expectedSig) return null
+    const data = JSON.parse(Buffer.from(payload, 'base64url').toString())
+    if (data.exp < Date.now()) return null
+    return data.uid
+  } catch { return null }
 }
 
 export async function getAuthenticatedUserId(): Promise<string | null> {
-  const token = await getUserSession()
-  return getUserId(token)
-}
-
-export async function getUserSession() {
   const c = await cookies()
-  return c.get(USER_COOKIE)?.value
+  const token = c.get(USER_COOKIE)?.value
+  return verifyUserToken(token)
 }
 
-export async function setUserCookie(token: string, expires: number, userId?: string) {
-  if (userId) bindUserSession(token, userId)
+export async function setUserCookie(token: string, expires: number) {
   const c = await cookies()
   c.set(USER_COOKIE, token, {
     httpOnly: true,
@@ -51,11 +42,12 @@ export async function setUserCookie(token: string, expires: number, userId?: str
   })
 }
 
-export function destroyUserSession(token?: string | null) {
-  if (token) userSessions.delete(token)
-}
-
 export async function clearUserCookie() {
   const c = await cookies()
   c.delete(USER_COOKIE)
+}
+
+export async function getUserSession(): Promise<string | undefined> {
+  const c = await cookies()
+  return c.get(USER_COOKIE)?.value
 }
