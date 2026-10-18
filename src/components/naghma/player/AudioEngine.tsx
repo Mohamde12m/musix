@@ -36,7 +36,18 @@ export function AudioEngine() {
     const onWaiting = () => setLoading(true)
     const onCanPlay = () => setLoading(false)
     const onError = () => { setError('تعذر تشغيل الأغنية. قد يكون الرابط غير صالح.'); setLoading(false); setIsPlaying(false) }
-    const onEnded = () => next(true)
+    const onEnded = () => {
+      // منح نقاط للمستخدم المسجل عند إكمال الأغنية
+      const track = queue[currentIndex]
+      if (track) {
+        fetch('/api/earnings/award', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ songId: track.id, songTitle: track.title })
+        }).catch(() => {})
+      }
+      next(true)
+    }
     el.addEventListener('timeupdate', onTime)
     el.addEventListener('loadedmetadata', onMeta)
     el.addEventListener('durationchange', onMeta)

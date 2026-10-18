@@ -131,3 +131,44 @@ model AppSetting {
   id    String @id
   value String
 }
+
+// ─── نظام الأرباح ─────────────────────────────────────
+model UserAccount {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  displayName       String
+  balance           Int      @default(0)
+  totalSongsListened Int     @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  earnings          EarningLog[]
+  withdrawals       WithdrawalRequest[]
+}
+
+model EarningLog {
+  id        String   @id @default(cuid())
+  userId    String
+  songId    String?
+  songTitle String?
+  points    Int      @default(0)
+  earnedAt  DateTime @default(now())
+  user      UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model WithdrawalRequest {
+  id              String   @id @default(cuid())
+  userId          String
+  userEmail       String?
+  userDisplayName String?
+  amount          Int
+  status          String   @default("pending")
+  paymentMethod   String?
+  paymentDetails  String?
+  requestedAt     DateTime @default(now())
+  processedAt      DateTime?
+  user            UserAccount @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([status])
+}
