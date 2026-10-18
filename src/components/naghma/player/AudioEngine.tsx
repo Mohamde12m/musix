@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { usePlayerStore, getAudioEl, setAudioEl } from '@/lib/stores/player-store'
+import { useEarningsStore } from '@/lib/stores/earnings-store'
 import { recordPlay } from '@/lib/api-client'
 
 export function AudioEngine() {
@@ -44,6 +45,11 @@ export function AudioEngine() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ songId: track.id, songTitle: track.title })
+        }).then(res => res.json()).then(data => {
+          if (data.ok && data.points > 0) {
+            useEarningsStore.getState().triggerAnimation(data.points)
+            useEarningsStore.getState().setPoints(data.balance, data.balance, data.totalSongsListened)
+          }
         }).catch(() => {})
       }
       next(true)

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
-import { Play, Heart, Bell, Search, Sparkles, TrendingUp, Clock, Zap } from 'lucide-react'
+import { Play, Heart, Bell, Search, Sparkles, TrendingUp, Clock, Zap, Wallet } from 'lucide-react'
 import { fetchHomeData } from '@/lib/api-client'
 import { usePlayerStore } from '@/lib/stores/player-store'
 import { useNavStore } from '@/lib/stores/nav-store'
@@ -47,6 +47,26 @@ export function HomePage() {
           <button onClick={() => navigate('profile')} className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full gradient-purple text-white text-xs font-bold" aria-label="حسابي">زائر</button>
         </div>
       </header>
+
+      {/* بانر استمع واربح */}
+      <button
+        onClick={() => navigate('profile')}
+        className="relative mb-4 flex w-full items-center gap-3 overflow-hidden rounded-2xl p-3 text-right tap-scale"
+        style={{ background: 'linear-gradient(135deg, oklch(0.35 0.2 145 / 0.3), oklch(0.3 0.15 295 / 0.3))' }}
+      >
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 pulse-glow">
+          <Wallet className="h-6 w-6 text-white" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-white">استمع واربح 💰</p>
+          <p className="text-[10px] text-white/80">5 نقاط لكل أغنية — حولها إلى دراهم!</p>
+        </div>
+        <span className="text-xs font-bold text-green-400">ابدأ ←</span>
+        {/* عملات متحركة في الخلفية */}
+        <span className="absolute right-20 top-0 text-xl opacity-20 animate-bounce" style={{ animationDelay: '0s' }}>🪙</span>
+        <span className="absolute right-32 top-2 text-lg opacity-15 animate-bounce" style={{ animationDelay: '0.3s' }}>💰</span>
+        <span className="absolute right-44 top-0 text-base opacity-10 animate-bounce" style={{ animationDelay: '0.6s' }}>🪙</span>
+      </button>
 
       {isLoading ? (
         <div className="space-y-8">

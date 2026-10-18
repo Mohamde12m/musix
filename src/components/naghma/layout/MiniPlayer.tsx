@@ -1,11 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { Play, Pause, SkipForward, Heart, AlertCircle, RotateCw } from 'lucide-react'
+import { Play, Pause, SkipForward, Heart, AlertCircle, RotateCw, Coins } from 'lucide-react'
 import { usePlayerStore, formatTime } from '@/lib/stores/player-store'
 import { useNavStore } from '@/lib/stores/nav-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
-import { motion } from 'framer-motion'
+import { useEarningsStore } from '@/lib/stores/earnings-store'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
 
 export function MiniPlayer() {
   const queue = usePlayerStore((s) => s.queue)
@@ -57,6 +59,38 @@ export function MiniPlayer() {
           )}
         </div>
       </div>
+      <PointsAnimation />
     </motion.div>
+  )
+}
+
+function PointsAnimation() {
+  const showAnimation = useEarningsStore((s) => s.showAnimation)
+  const recentEarned = useEarningsStore((s) => s.recentEarned)
+  const clearAnimation = useEarningsStore((s) => s.clearAnimation)
+
+  useEffect(() => {
+    if (showAnimation) {
+      const t = setTimeout(clearAnimation, 2500)
+      return () => clearTimeout(t)
+    }
+  }, [showAnimation, clearAnimation])
+
+  return (
+    <AnimatePresence>
+      {showAnimation && (
+        <motion.div
+          initial={{ opacity: 0, y: 0, scale: 0.5 }}
+          animate={{ opacity: 1, y: -80, scale: 1.3 }}
+          exit={{ opacity: 0, y: -120, scale: 0.8 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+          className="fixed bottom-[140px] left-1/2 -translate-x-1/2 z-[60] flex items-center gap-1.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-5 py-2.5 shadow-2xl border border-green-300/50"
+        >
+          <motion.span animate={{ rotate: [0, 20, -20, 0] }} transition={{ duration: 0.5, repeat: 2 }}>🪙</motion.span>
+          <span className="text-xl font-extrabold text-white">+{recentEarned}</span>
+          <span className="text-sm text-white/90">نقطة</span>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
