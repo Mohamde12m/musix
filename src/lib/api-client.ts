@@ -73,6 +73,9 @@ export async function adminDeleteSong(id: string) {
   await jfetch(`${API}/admin/songs/${id}`, { method: 'DELETE' })
 }
 export async function adminFetchArtists(): Promise<ApiArtist[]> { return jfetch(`${API}/admin/artists`) }
+export async function adminUpdateArtist(id: string, data: { name?: string; image?: string | null; bio?: string | null; country?: string | null }): Promise<any> {
+  return jfetch(`${API}/admin/artists/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+}
 export async function adminFetchCategories(): Promise<ApiCategory[]> { return jfetch(`${API}/admin/categories`) }
 export async function adminCreateCategory(data: any): Promise<ApiCategory> {
   return jfetch(`${API}/admin/categories`, { method: 'POST', body: JSON.stringify(data) })

@@ -178,7 +178,7 @@ function AddSongView() {
   const queryClient = useQueryClient()
   const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: adminFetchCategories })
   const { data: artists } = useQuery({ queryKey: ['admin-artists'], queryFn: adminFetchArtists })
-  const [form, setForm] = useState({ title: '', artistName: '', albumTitle: '', audioUrl: '', coverUrl: '', categoryName: '', description: '', lyrics: '', duration: '', keywords: '', published: true, featured: false, rights: '' })
+  const [form, setForm] = useState({ title: '', artistName: '', artistImage: '', albumTitle: '', audioUrl: '', coverUrl: '', categoryName: '', description: '', lyrics: '', duration: '', keywords: '', published: true, featured: false, rights: '' })
   const [saving, setSaving] = useState(false)
   const set = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }))
   const handleSubmit = async (e: React.FormEvent) => {
@@ -201,6 +201,7 @@ function AddSongView() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <Field label="اسم الأغنية *" required><Input value={form.title} onChange={(e) => set('title', e.target.value)} className="h-11" required /></Field>
         <Field label="اسم الفنان"><Input value={form.artistName} onChange={(e) => set('artistName', e.target.value)} list="artists-list" className="h-11" /><datalist id="artists-list">{artists?.map((a) => <option key={a.id} value={a.name} />)}</datalist></Field>
+        <Field label="صورة الفنان (رابط)" help="الصق رابط صورة الفنان الشخصية"><Input value={form.artistImage} onChange={(e) => set('artistImage', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://..." /></Field>
         <Field label="رابط MP3 المباشر *" required><Input value={form.audioUrl} onChange={(e) => set('audioUrl', e.target.value)} dir="ltr" className="h-11 text-left" required /></Field>
         <Field label="رابط صورة الغلاف"><Input value={form.coverUrl} onChange={(e) => set('coverUrl', e.target.value)} dir="ltr" className="h-11 text-left" /></Field>
         <Field label="القسم الموسيقي"><Select value={form.categoryName} onValueChange={(v) => set('categoryName', v === '__none' ? '' : v)}><SelectTrigger className="h-11"><SelectValue placeholder="اختر" /></SelectTrigger><SelectContent><SelectItem value="__none">بدون تصنيف</SelectItem>{categories?.map((c) => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></Field>
@@ -222,7 +223,7 @@ function EditSongView({ song }: { song: ApiSong }) {
   const navigate = useNavStore((s) => s.navigate)
   const queryClient = useQueryClient()
   const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: adminFetchCategories })
-  const [form, setForm] = useState({ title: song.title, artistName: song.artistName || '', albumTitle: song.albumTitle || '', audioUrl: song.audioUrl, coverUrl: song.coverUrl || '', categoryName: song.categoryName || '', description: song.description || '', lyrics: song.lyrics || '', duration: song.duration ? String(song.duration) : '', keywords: song.keywords.join('، '), published: song.published, featured: song.featured, rights: song.rights || '' })
+  const [form, setForm] = useState({ title: song.title, artistName: song.artistName || '', artistImage: song.artistImage || '', albumTitle: song.albumTitle || '', audioUrl: song.audioUrl, coverUrl: song.coverUrl || '', categoryName: song.categoryName || '', description: song.description || '', lyrics: song.lyrics || '', duration: song.duration ? String(song.duration) : '', keywords: song.keywords.join('، '), published: song.published, featured: song.featured, rights: song.rights || '' })
   const [saving, setSaving] = useState(false)
   const set = (k: keyof typeof form, v: any) => setForm((f) => ({ ...f, [k]: v }))
   const handleSubmit = async (e: React.FormEvent) => {
@@ -240,6 +241,7 @@ function EditSongView({ song }: { song: ApiSong }) {
       <form onSubmit={handleSubmit} className="space-y-3">
         <Field label="اسم الأغنية *" required><Input value={form.title} onChange={(e) => set('title', e.target.value)} className="h-11" required /></Field>
         <Field label="اسم الفنان"><Input value={form.artistName} onChange={(e) => set('artistName', e.target.value)} className="h-11" /></Field>
+        <Field label="صورة الفنان (رابط)" help="الصق رابط صورة الفنان"><Input value={form.artistImage} onChange={(e) => set('artistImage', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://..." /></Field>
         <Field label="رابط MP3 *" required><Input value={form.audioUrl} onChange={(e) => set('audioUrl', e.target.value)} dir="ltr" className="h-11 text-left" required /></Field>
         <Field label="رابط صورة الغلاف"><Input value={form.coverUrl} onChange={(e) => set('coverUrl', e.target.value)} dir="ltr" className="h-11 text-left" /></Field>
         <Field label="القسم الموسيقي"><Select value={form.categoryName || '__none'} onValueChange={(v) => set('categoryName', v === '__none' ? '' : v)}><SelectTrigger className="h-11"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="__none">بدون تصنيف</SelectItem>{categories?.map((c) => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}</SelectContent></Select></Field>
@@ -260,8 +262,76 @@ function EditSongView({ song }: { song: ApiSong }) {
 function Field({ label, required, help, children }: { label: string; required?: boolean; help?: string; children: React.ReactNode }) { return <div><Label className="mb-1.5 block text-sm flex items-center gap-1">{label}{required && <span className="text-destructive">*</span>}</Label>{children}{help && <p className="mt-1 text-[10px] text-muted-foreground">{help}</p>}</div> }
 
 function ArtistsView() {
+  const queryClient = useQueryClient()
   const { data: artists, isLoading } = useQuery({ queryKey: ['admin-artists'], queryFn: adminFetchArtists })
-  return <div className="space-y-3"><h1 className="text-lg font-bold">إدارة الفنانين</h1><p className="text-xs text-muted-foreground">تُنشأ تلقائيًا عند إضافة أغنية باسم فنان جديد.</p>{isLoading ? <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : artists?.length ? <div className="grid grid-cols-2 gap-2">{artists.map((a) => <div key={a.id} className="rounded-2xl bg-card/40 p-3 text-center"><div className="relative mx-auto h-14 w-14 overflow-hidden rounded-full ring-2 ring-primary/20">{a.image ? <Image src={a.image} alt={a.name} fill sizes="56px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple text-white text-lg font-bold">{a.name.charAt(0)}</div>}</div><p className="mt-2 truncate text-xs font-semibold">{a.name}</p><p className="text-[10px] text-muted-foreground">{a.songCount} أغنية</p></div>)}</div> : <p className="py-8 text-center text-sm text-muted-foreground">لا يوجد فنانون بعد</p>}</div>
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editImage, setEditImage] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const openEdit = (a: any) => { setEditingId(a.id); setEditImage(a.image || '') }
+  const handleSave = async () => {
+    if (!editingId) return
+    setSaving(true)
+    try {
+      await adminUpdateArtist(editingId, { image: editImage.trim() || null })
+      toast.success('تم تحديث صورة الفنان')
+      queryClient.invalidateQueries({ queryKey: ['admin-artists'] })
+      queryClient.invalidateQueries({ queryKey: ['home'] })
+      setEditingId(null)
+    } catch (e: any) { toast.error(e.message) }
+    finally { setSaving(false) }
+  }
+
+  return <div className="space-y-3">
+    <h1 className="text-lg font-bold">إدارة الفنانين</h1>
+    <p className="text-xs text-muted-foreground">اضغط على زر القلم لإضافة/تغيير صورة الفنان.</p>
+    {isLoading ? <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : artists?.length ? (
+      <div className="space-y-1">
+        {artists.map((a) => (
+          <div key={a.id} className="group flex items-center gap-3 rounded-xl bg-card/40 p-2.5">
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-muted ring-1 ring-border/30">
+              {a.image ? <Image src={a.image} alt={a.name} fill sizes="48px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple text-white text-sm font-bold">{a.name.charAt(0)}</div>}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">{a.name}</p>
+              <p className="text-[10px] text-muted-foreground">{a.songCount} أغنية</p>
+            </div>
+            <button onClick={() => openEdit(a)} className="rounded-full p-1.5 text-primary tap-scale hover:bg-primary/10" aria-label="تعديل الصورة"><Pencil className="h-4 w-4" /></button>
+          </div>
+        ))}
+      </div>
+    ) : <p className="py-8 text-center text-sm text-muted-foreground">لا يوجد فنانون بعد</p>}
+
+    {/* نافذة تعديل صورة الفنان */}
+    <Dialog open={!!editingId} onOpenChange={(o) => { if (!o) setEditingId(null) }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>تعديل صورة الفنان</DialogTitle>
+          <DialogDescription>الصق رابط صورة الفنان الشخصية. ستظهر في قسم الفنانين.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2 py-2">
+          {editImage.trim() && (
+            <div className="flex items-center gap-3 rounded-xl border border-border/40 bg-card/40 p-2.5">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-muted ring-1 ring-border/30">
+                <Image src={editImage.trim()} alt="معاينة" fill sizes="64px" className="object-cover" unoptimized />
+              </div>
+              <p className="text-xs font-semibold">معاينة الصورة</p>
+            </div>
+          )}
+          <Field label="رابط صورة الفنان">
+            <Input value={editImage} onChange={(e) => setEditImage(e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://..." />
+          </Field>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setEditingId(null)}>إلغاء</Button>
+          <Button onClick={handleSave} disabled={saving} className="gradient-purple text-white">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : <Check className="h-4 w-4 ml-1" />}
+            حفظ
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>
 }
 
 function CategoriesView() {
