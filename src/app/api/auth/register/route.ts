@@ -22,5 +22,5 @@ export async function POST(req: NextRequest) {
     const token = createUserToken(user.id)
     await setUserCookie(token, Date.now() + 30 * 24 * 60 * 60 * 1000)
     return NextResponse.json({ ok: true, user: { id: user.id, email: user.email, displayName: user.displayName, balance: user.balance } })
-  } catch (e: any) { console.error('register error', e); return NextResponse.json({ error: 'تعذر التسجيل' }, { status: 500 }) }
+  } catch (e: any) { console.error('register error', e); return NextResponse.json({ error: 'تعذر التسجيل: ' + (e?.message || 'unknown') }, { status: 500 }) }
 }
