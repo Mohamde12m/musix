@@ -5,6 +5,8 @@ import { Play, Heart } from 'lucide-react'
 import { usePlayerStore, formatTime } from '@/lib/stores/player-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
 import { useNavStore } from '@/lib/stores/nav-store'
+import { DownloadButton } from '@/components/naghma/common/DownloadButton'
+import { songToTrack } from '@/lib/track-utils'
 import type { ApiSong } from '@/lib/types'
 
 export function SongCard({ song, queue, variant = 'default', showFavorite = true }: { song: ApiSong; queue?: ApiSong[]; variant?: 'default' | 'compact' | 'list'; showFavorite?: boolean }) {
@@ -18,7 +20,7 @@ export function SongCard({ song, queue, variant = 'default', showFavorite = true
   const isActive = currentId === song.id
   const q = queue && queue.length > 0 ? queue : [song]
 
-  const toTrack = (s: ApiSong) => ({ id: s.id, title: s.title, artistName: s.artistName || undefined, artistId: s.artistId || undefined, albumTitle: s.albumTitle || undefined, audioUrl: s.audioUrl, coverUrl: s.coverUrl || undefined, duration: s.duration || undefined, categoryId: s.categoryId || undefined, categoryName: s.categoryName || undefined, lyrics: s.lyrics || undefined, description: s.description || undefined })
+  const toTrack = songToTrack
 
   const handlePlay = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -38,6 +40,7 @@ export function SongCard({ song, queue, variant = 'default', showFavorite = true
         </div>
         {song.duration ? <span className="text-xs text-muted-foreground">{formatTime(song.duration)}</span> : null}
         {showFavorite && <button onClick={(e) => { e.stopPropagation(); toggleFav(song.id) }} className={`rounded-full p-1.5 tap-scale ${isFav ? 'text-red-500' : 'text-muted-foreground'}`} aria-label="مفضلة"><Heart className="h-4 w-4" fill={isFav ? 'currentColor' : 'none'} /></button>}
+        <DownloadButton song={song} />
       </div>
     )
   }

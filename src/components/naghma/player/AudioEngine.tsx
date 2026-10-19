@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { usePlayerStore, getAudioEl, setAudioEl } from '@/lib/stores/player-store'
 import { useEarningsStore } from '@/lib/stores/earnings-store'
+import { isDownloaded } from '@/lib/downloads'
 import { recordPlay } from '@/lib/api-client'
 
 export function AudioEngine() {
