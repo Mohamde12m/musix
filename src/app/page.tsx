@@ -9,7 +9,6 @@ import { MiniPlayer } from '@/components/naghma/layout/MiniPlayer'
 import { FullPlayer } from '@/components/naghma/player/FullPlayer'
 import { PageRouter } from '@/components/naghma/layout/PageRouter'
 import { SplashScreen } from '@/components/naghma/layout/SplashScreen'
-import { ServiceWorkerRegister } from '@/components/naghma/layout/ServiceWorkerRegister'
 import { useNavStore } from '@/lib/stores/nav-store'
 import { usePlayerStore } from '@/lib/stores/player-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
@@ -62,7 +61,6 @@ function AppInner() {
   }, [])
   return (
     <div className="relative min-h-screen">
-      <ServiceWorkerRegister />
       <SplashScreen onDone={() => setAppReady(true)} />
       {appReady && <AppContent />}
     </div>

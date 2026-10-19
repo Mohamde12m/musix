@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Library, Plus, ListMusic, Clock, Heart, Music2, Trash2, Play, WifiOff } from 'lucide-react'
+import { Library, Plus, ListMusic, Clock, Heart, Music2, Trash2, Play } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useLibraryStore } from '@/lib/stores/library-store'
 import { useNavStore } from '@/lib/stores/nav-store'
@@ -36,7 +36,6 @@ export function LibraryPage() {
       <div className="mb-6 grid grid-cols-2 gap-2">
         <button onClick={() => navigate('favorites')} className="flex items-center gap-3 rounded-2xl bg-red-500/10 p-3 text-right tap-scale"><Heart className="h-8 w-8 text-red-500" fill="currentColor" /><div className="text-right"><p className="text-sm font-semibold">المفضلة</p><p className="text-xs text-muted-foreground">{favCount} أغنية</p></div></button>
         <button onClick={() => navigate('assistant')} className="flex items-center gap-3 rounded-2xl bg-primary/10 p-3 text-right tap-scale"><Music2 className="h-8 w-8 text-primary" /><div className="text-right"><p className="text-sm font-semibold">مساعد MusiX</p><p className="text-xs text-muted-foreground">اكتشف أغانٍ</p></div></button>
-        <button onClick={() => navigate('downloaded')} className="flex items-center gap-3 rounded-2xl bg-green-500/10 p-3 text-right tap-scale"><WifiOff className="h-8 w-8 text-green-500" /><div className="text-right"><p className="text-sm font-semibold">الأغاني المنزّلة</p><p className="text-xs text-muted-foreground">استمع بدون إنترنت</p></div></button>
       </div>
       <section className="mb-6">
         <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold"><ListMusic className="h-4 w-4 text-primary" />قوائمي ({playlists.length})</h3>

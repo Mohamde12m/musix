@@ -11,7 +11,6 @@ import { SongDetailPage } from '@/components/naghma/pages/SongDetailPage'
 import { ArtistDetailPage } from '@/components/naghma/pages/ArtistDetailPage'
 import { CategoryDetailPage } from '@/components/naghma/pages/CategoryDetailPage'
 import { PlaylistDetailPage } from '@/components/naghma/pages/PlaylistDetailPage'
-import { DownloadedPage } from '@/components/naghma/pages/DownloadedPage'
 import { AssistantPage } from '@/components/naghma/assistant/AssistantPage'
 import { AdminLogin } from '@/components/naghma/admin/AdminLogin'
 import { AdminApp } from '@/components/naghma/admin/AdminApp'
@@ -43,7 +42,6 @@ function renderPage(page: PageId) {
     case 'artist': return <ArtistDetailPage />
     case 'category': return <CategoryDetailPage />
     case 'playlist': return <PlaylistDetailPage />
-    case 'downloaded': return <DownloadedPage />
     case 'assistant': return <AssistantPage />
     case 'admin-login': return <AdminLogin />
     case 'admin-dashboard': case 'admin-songs': case 'admin-add-song': case 'admin-edit-song': case 'admin-artists': case 'admin-categories': return <AdminApp />

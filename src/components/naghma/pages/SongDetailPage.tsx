@@ -3,8 +3,6 @@ import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import { Play, Pause, Heart, Share2, ChevronRight, Music2, Clock, ListMusic, Disc3, AlertCircle } from 'lucide-react'
 import { fetchSong, fetchSongs } from '@/lib/api-client'
-import { DownloadButton } from '@/components/naghma/common/DownloadButton'
-import { songToTrack } from '@/lib/track-utils'
 import { useNavStore } from '@/lib/stores/nav-store'
 import { usePlayerStore, formatTime } from '@/lib/stores/player-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
@@ -31,7 +29,7 @@ export function SongDetailPage() {
   const isActive = currentId === song.id
   const handlePlay = () => {
     if (isActive) togglePlay()
-    else playTrack(songToTrack(song), related ? related.filter(s => s.id !== song.id).concat(song).map(songToTrack).slice(0, 12) : [songToTrack(song)])
+    else playTrack({ id: song.id, title: song.title, artistName: song.artistName || undefined, artistId: song.artistId || undefined, audioUrl: song.audioUrl, coverUrl: song.coverUrl || undefined, duration: song.duration || undefined, lyrics: song.lyrics || undefined }, related ? related.filter(s => s.id !== song.id).concat(song).map(s => ({ id: s.id, title: s.title, artistName: s.artistName || undefined, artistId: s.artistId || undefined, audioUrl: s.audioUrl, coverUrl: s.coverUrl || undefined, duration: s.duration || undefined, lyrics: s.lyrics || undefined })).slice(0, 12) : [song].map(s => ({ id: s.id, title: s.title, artistName: s.artistName || undefined, artistId: s.artistId || undefined, audioUrl: s.audioUrl, coverUrl: s.coverUrl || undefined, duration: s.duration || undefined, lyrics: s.lyrics || undefined })))
   }
   return (
     <div className="px-3 pb-40 pt-[calc(env(safe-area-inset-top)+12px)]">
@@ -45,7 +43,6 @@ export function SongDetailPage() {
           <button onClick={() => toggleFav(song.id)} className="flex h-11 w-11 items-center justify-center rounded-full bg-card/60 tap-scale" aria-label="مفضلة"><Heart className={`h-5 w-5 ${isFav ? 'text-red-500' : 'text-muted-foreground'}`} fill={isFav ? 'currentColor' : 'none'} /></button>
           <button onClick={handlePlay} className="flex h-14 w-14 items-center justify-center rounded-full gradient-purple text-white shadow-2xl tap-scale glow-purple" aria-label="تشغيل">{isActive && isPlaying ? <Pause className="h-6 w-6" fill="currentColor" /> : <Play className="h-6 w-6 mr-0.5" fill="currentColor" />}</button>
           <button onClick={() => { navigator.clipboard?.writeText(`${window.location.origin}/?song=${song.id}`); toast.success('تم نسخ الرابط') }} className="flex h-11 w-11 items-center justify-center rounded-full bg-card/60 tap-scale" aria-label="مشاركة"><Share2 className="h-5 w-5" /></button>
-          <div className="flex items-center"><DownloadButton song={song} variant="full" /></div>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-2 text-xs">
           {song.categoryName && <button onClick={() => song.categoryId && navigate('category', { categoryId: song.categoryId })} className="flex items-center gap-2 rounded-xl bg-card/40 p-2.5 text-right tap-scale"><Disc3 className="h-4 w-4 text-primary" /><div><p className="text-[10px] text-muted-foreground">التصنيف</p><p className="font-semibold">{song.categoryName}</p></div></button>}
