@@ -4,7 +4,7 @@ import { create } from 'zustand'
 
 export type PageId =
   | 'home' | 'discover' | 'favorites' | 'library' | 'profile'
-  | 'search' | 'song' | 'artist' | 'category' | 'playlist'
+  | 'search' | 'song' | 'artist' | 'category' | 'playlist' | 'downloaded'
   | 'assistant' | 'settings'
   | 'admin-login' | 'admin-dashboard' | 'admin-songs' | 'admin-add-song'
   | 'admin-edit-song' | 'admin-artists' | 'admin-categories'
