@@ -31,6 +31,7 @@ export function DownloadedPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadSongs()
     setOnline(navigator.onLine)
     const onOnline = () => setOnline(true)
