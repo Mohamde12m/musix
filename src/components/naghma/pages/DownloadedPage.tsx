@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { WifiOff, Download, Trash2, Play, Shuffle, Music2, HardDrive } from 'lucide-react'
+import { WifiOff, Download, Trash2, Play, Shuffle, Music2, HardDrive, ChevronRight } from 'lucide-react'
 import { getDownloadedSongs, clearAllDownloads, estimateStorage, deleteDownloadedSong } from '@/lib/downloads'
 import { SongCard } from '@/components/naghma/cards/SongCard'
 import { EmptyState, LoadingSpinner } from '@/components/naghma/common/EmptyState'
@@ -147,5 +147,3 @@ export function DownloadedPage() {
     </div>
   )
 }
-
-import { ChevronRight } from 'lucide-react'
