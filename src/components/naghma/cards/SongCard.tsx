@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Play, Heart, Download } from 'lucide-react'
+import { Play, Heart } from 'lucide-react'
 import { usePlayerStore, formatTime } from '@/lib/stores/player-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
 import { useNavStore } from '@/lib/stores/nav-store'
@@ -38,14 +38,6 @@ export function SongCard({ song, queue, variant = 'default', showFavorite = true
         </div>
         {song.duration ? <span className="text-xs text-muted-foreground">{formatTime(song.duration)}</span> : null}
         {showFavorite && <button onClick={(e) => { e.stopPropagation(); toggleFav(song.id) }} className={`rounded-full p-1.5 tap-scale ${isFav ? 'text-red-500' : 'text-muted-foreground'}`} aria-label="مفضلة"><Heart className="h-4 w-4" fill={isFav ? 'currentColor' : 'none'} /></button>}
-        <button
-          onClick={(e) => { e.stopPropagation(); e.preventDefault(); window.open(`/api/songs/${song.id}/download`, '_blank') }}
-          className="rounded-full p-1.5 text-primary tap-scale hover:bg-primary/10"
-          aria-label="تنزيل"
-          title="تنزيل الأغنية"
-        >
-          <Download className="h-4 w-4" />
-        </button>
       </div>
     )
   }
