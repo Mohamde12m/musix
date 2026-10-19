@@ -22,10 +22,10 @@ export function DownloadedPage() {
   const back = useNavStore((s) => s.back)
 
   const loadSongs = async () => {
-    setLoading(true)
     const downloaded = await getDownloadedSongs()
-    setSongs(downloaded.sort((a, b) => (b.downloadedAt || 0) - (a.downloadedAt || 0)))
+    const sorted = downloaded.sort((a, b) => (b.downloadedAt || 0) - (a.downloadedAt || 0))
     const est = await estimateStorage()
+    setSongs(sorted)
     setStorage(est)
     setLoading(false)
   }
