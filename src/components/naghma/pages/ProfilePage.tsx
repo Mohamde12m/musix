@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch'
 import { adminCheck, adminLogout } from '@/lib/api-client'
 import { toast } from 'sonner'
 import { Wallet, Music2, TrendingUp, LogOut, User, Settings, Heart, ListMusic, ChevronLeft, Moon, Shield } from 'lucide-react'
+import { RewardedVideoAd } from '@/components/naghma/common/RewardedVideoAd'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -121,6 +122,9 @@ export function ProfilePage() {
           </div>
         )}
       </header>
+
+      {/* إعلان بمكافأة */}
+      {user && <RewardedVideoAd />}
 
       {/* بطاقة الأرباح */}
       {user && balance && (
