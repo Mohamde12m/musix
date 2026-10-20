@@ -22,11 +22,17 @@ export const viewport: Viewport = {
 
 const splashBootstrap = `(function(){try{if(sessionStorage.getItem('musix_splash_shown')){var s=document.createElement('style');s.id='musix-splash-hide';s.textContent='.splash-root{display:none!important}';document.head.appendChild(s);}}catch(e){}})();`;
 
+// AdSense — ضع معرّف الناشر هنا بعد الموافقة (مثال: ca-pub-1234567890123456)
+const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID || '';
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning className="dark">
       <head>
         <script dangerouslySetInnerHTML={{ __html: splashBootstrap }} />
+        {ADSENSE_ID && (
+          <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`} crossOrigin="anonymous" />
+        )}
       </head>
       <body className={`${cairo.variable} ${tajawal.variable} font-sans antialiased app-bg min-h-screen`} style={{ fontFamily: "var(--font-cairo), system-ui, sans-serif" }}>
         {children}

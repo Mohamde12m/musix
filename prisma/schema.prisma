@@ -172,3 +172,17 @@ model WithdrawalRequest {
   @@index([userId])
   @@index([status])
 }
+
+model Ad {
+  id          String   @id @default(cuid())
+  title       String
+  imageUrl    String?
+  linkUrl     String
+  position    String   @default("home")
+  active      Boolean  @default(true)
+  clicks      Int      @default(0)
+  impressions Int      @default(0)
+  createdAt   DateTime @default(now())
+  @@index([active])
+  @@index([position])
+}

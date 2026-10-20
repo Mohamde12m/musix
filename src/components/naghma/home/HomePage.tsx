@@ -14,6 +14,7 @@ import { CategoryCard } from '@/components/naghma/cards/CategoryCard'
 import { SectionHeader } from '@/components/naghma/common/SectionHeader'
 import { HScroll } from '@/components/naghma/common/EmptyState'
 import { EmptyState, SkeletonCard } from '@/components/naghma/common/EmptyState'
+import { AdBanner } from '@/components/naghma/common/AdBanner'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -67,6 +68,9 @@ export function HomePage() {
         <span className="absolute right-32 top-2 text-lg opacity-15 animate-bounce" style={{ animationDelay: '0.3s' }}>💰</span>
         <span className="absolute right-44 top-0 text-base opacity-10 animate-bounce" style={{ animationDelay: '0.6s' }}>🪙</span>
       </button>
+
+      {/* إعلان */}
+      <AdBanner position="home" />
 
       {isLoading ? (
         <div className="space-y-8">
