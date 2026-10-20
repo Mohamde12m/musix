@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "exportedAt": "2026-10-17T01:29:19.631Z",
+  "exportedAt": "2026-10-21T00:15:01.514Z",
   "categories": [
     {
       "name": "أغاني مغربية",
@@ -41,14 +41,6 @@
       "image": "/categories/arabic.png",
       "emoji": "🌙",
       "order": 5
-    },
-    {
-      "name": "أغاني رومانسية",
-      "slug": "romantic",
-      "description": "أغانٍ رومانسية",
-      "image": "/categories/romantic.png",
-      "emoji": "💕",
-      "order": 6
     },
     {
       "name": "أغاني حزينة",
@@ -97,6 +89,14 @@
       "image": "/categories/mood.png",
       "emoji": "🎭",
       "order": 12
+    },
+    {
+      "name": "اغاني Rap",
+      "slug": "اغاني-rap",
+      "description": "أغانٍ رومانسية",
+      "image": "https://i.ytimg.com/vi/eBNWq-bYxWg/mqdefault.jpg",
+      "emoji": null,
+      "order": 6
     }
   ],
   "artists": [
@@ -113,51 +113,76 @@
       "country": "الجزائر"
     },
     {
+      "name": "T.I BLAZE",
+      "image": null,
+      "bio": null,
+      "country": null
+    },
+    {
       "name": "ElGrandeToto, Gros Mo",
+      "image": "https://i.ytimg.com/vi/eBNWq-bYxWg/hqdefault.jpg",
+      "bio": null,
+      "country": null
+    },
+    {
+      "name": "DOUZI",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtgi6HQLn_h5IUDwtpJKcX5h8XB48gXIDQ0g&s",
+      "bio": null,
+      "country": null
+    },
+    {
+      "name": "اكتشف عالمك الموسيقي",
+      "image": null,
+      "bio": null,
+      "country": null
+    },
+    {
+      "name": "عالمك الموسيقي",
+      "image": null,
+      "bio": null,
+      "country": null
+    },
+    {
+      "name": "Lbenj",
+      "image": null,
+      "bio": null,
+      "country": null
+    },
+    {
+      "name": "Test Artist",
+      "image": null,
+      "bio": null,
+      "country": null
+    },
+    {
+      "name": "Hh",
       "image": null,
       "bio": null,
       "country": null
     }
   ],
-  "albums": [],
+  "albums": [
+    {
+      "title": "Elle Mummy",
+      "artistName": "T.I BLAZE",
+      "coverUrl": null,
+      "year": null
+    },
+    {
+      "title": "ALAM",
+      "artistName": "Lbenj",
+      "coverUrl": null,
+      "year": null
+    }
+  ],
   "songs": [
-    {
-      "title": "أغنية تجريبية - MusiX",
-      "artistName": "فنان تجريبي",
-      "albumTitle": null,
-      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      "coverUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80",
-      "categoryName": "أغاني مغربية",
-      "description": "أغنية تجريبية",
-      "lyrics": null,
-      "duration": 372,
-      "keywords": "تجريبي,مغربية",
-      "published": true,
-      "featured": true,
-      "rights": "تجريبي"
-    },
-    {
-      "title": "لحن هادئ",
-      "artistName": "منيرة تجريبية",
-      "albumTitle": null,
-      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-      "coverUrl": "https://images.unsplash.com/photo-1518609878373-06d740f60d80?w=600&q=80",
-      "categoryName": "موسيقى هادئة",
-      "description": "مقطوعة هادئة",
-      "lyrics": null,
-      "duration": 426,
-      "keywords": "هادئ",
-      "published": true,
-      "featured": true,
-      "rights": "تجريبي"
-    },
     {
       "title": "نبض الروح",
       "artistName": "فنان تجريبي",
       "albumTitle": null,
       "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
       "coverUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80",
-      "categoryName": "أغاني رومانسية",
+      "categoryName": "اغاني Rap",
       "description": "لحن رومانسي",
       "lyrics": null,
       "duration": 348,
@@ -182,19 +207,124 @@
       "rights": "تجريبي"
     },
     {
-      "title": "ليالي الشرق",
-      "artistName": "فنان تجريبي",
+      "title": "THEY ENVY US",
+      "artistName": "DOUZI",
       "albumTitle": null,
-      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
-      "coverUrl": "https://images.unsplash.com/photo-1511670792090-7ece0b935ea7?w=600&q=80",
-      "categoryName": "أغاني عربية",
-      "description": "موسيقى عربية",
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/ErXayVMW1IA.mp3",
+      "coverUrl": "https://i.ytimg.com/vi/DP7KnEuqP3Q/hqdefault.jpg",
+      "categoryName": "أغاني مغربية",
+      "description": null,
       "lyrics": null,
-      "duration": 292,
-      "keywords": "عربي",
+      "duration": null,
+      "keywords": "Lyrics :   Abdelkader douzi • Composed by :  Abdelkader douzi • Arranged  by :  Mourad Majjoud • Mix & Mastering : Mourad Majjoud • Directed By : Taha Houssini • Executive Producer :  Kader Douzi",
+      "published": true,
+      "featured": false,
+      "rights": null
+    },
+    {
+      "title": "اكتشف",
+      "artistName": "عالمك الموسيقي",
+      "albumTitle": null,
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/a-ddGgGwu2s.mp3",
+      "coverUrl": "https://i.ibb.co/zT5SRZrx/file-00000000e1b08210bc0de1e1b7ed6ca7.png",
+      "categoryName": "أغاني جديدة",
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": true,
+      "rights": null
+    },
+    {
+      "title": "لحن هادئ",
+      "artistName": "منيرة تجريبية",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1518609878373-06d740f60d80?w=600&q=80",
+      "categoryName": "موسيقى هادئة",
+      "description": "مقطوعة هادئة",
+      "lyrics": null,
+      "duration": 426,
+      "keywords": "هادئ",
       "published": true,
       "featured": true,
       "rights": "تجريبي"
+    },
+    {
+      "title": "Round One",
+      "artistName": "T.I BLAZE",
+      "albumTitle": "Elle Mummy",
+      "audioUrl": "https://music.audiomack.com/hq/ti-blaze/round-one-elle-mummy-6276266-6acf8cc8605c4__1791986889.m4a?Expires=1792261790&Signature=eWFmhAMTa4F6uNW9Rg4SP0cp8JB5F0w6LhXd1y8OeWN3pJRAlQX2KkDrAVY6lI4Hxrb8h7mWOOg9id~xXvx~n0Juja8Qzt3ckdQselx9AZPOlsJV~oQBhtU9aq0O0XdgKqTOjw0UIallN38p7oSCCB8GWJj4h3CyovsVCaL4PiU_&Key-Pair-Id=APKAIKAIRXBA2H7FXITA",
+      "coverUrl": "https://i.audiomack.com/ti-blaze/36856a5714.webp?width=360",
+      "categoryName": "حسب المزاج",
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": false,
+      "rights": null
+    },
+    {
+      "title": "أغنية تجريبية - MusiX",
+      "artistName": "فنان تجريبي",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80",
+      "categoryName": "أغاني مغربية",
+      "description": "أغنية تجريبية",
+      "lyrics": null,
+      "duration": 372,
+      "keywords": "تجريبي,مغربية",
+      "published": true,
+      "featured": true,
+      "rights": "تجريبي"
+    },
+    {
+      "title": "27 Full Album 2023 By Laouimri PROMOTIONAL",
+      "artistName": "ElGrandeToto, Gros Mo",
+      "albumTitle": null,
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/vDMyNUGc9GM.mp3",
+      "coverUrl": "https://i.ytimg.com/vi/vDMyNUGc9GM/hqdefault.jpg",
+      "categoryName": "اغاني Rap",
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": false,
+      "rights": null
+    },
+    {
+      "title": "FUSSI THEY SAID SO MUCH",
+      "artistName": "DOUZI",
+      "albumTitle": null,
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/jgPyqol4V64.mp3",
+      "coverUrl": "https://i.ytimg.com/vi/jgPyqol4V64/hqdefault.jpg",
+      "categoryName": null,
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": true,
+      "rights": null
+    },
+    {
+      "title": "PLM",
+      "artistName": "Lbenj",
+      "albumTitle": "ALAM",
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/ZV9bmwSVkyw.mp3",
+      "coverUrl": "https://i.ytimg.com/vi/ZV9bmwSVkyw/hqdefault.jpg",
+      "categoryName": "اغاني Rap",
+      "description": "PLM\" يجمع بين النجم Lbenj و Abdeelgha4، تم إصداره في 30 يناير 2026. تطرح الأغنية طابعاً واقعياً يروي قصص الكفاح والصعود من الفقر، تحديات الشارع، تجارب الصداقة، وتجاوز الصعاب بطموح وإرادة قوية.",
+      "lyrics": null,
+      "duration": 199,
+      "keywords": "Lbenj,Abdeelgha4,PLM,ALAM,Rap Marocain,Moroccan Rap,Lbenj PLM,جديد الراب المغربي,أغنية PLM,موسيقى راب مغربية,Lbenj ALAM",
+      "published": true,
+      "featured": false,
+      "rights": null
     },
     {
       "title": "دمعة حزين",
@@ -212,12 +342,72 @@
       "rights": "تجريبي"
     },
     {
+      "title": "ليالي الشرق",
+      "artistName": "فنان تجريبي",
+      "albumTitle": null,
+      "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+      "coverUrl": "https://images.unsplash.com/photo-1511670792090-7ece0b935ea7?w=600&q=80",
+      "categoryName": "أغاني عربية",
+      "description": "موسيقى عربية",
+      "lyrics": null,
+      "duration": 292,
+      "keywords": "عربي",
+      "published": true,
+      "featured": true,
+      "rights": "تجريبي"
+    },
+    {
       "title": "Timide",
       "artistName": "ElGrandeToto, Gros Mo",
       "albumTitle": null,
       "audioUrl": "https://music.audiomack.com/hq/elgrandetoto/timide__1774018630.m4a?Expires=1792214885&Signature=ZavkmW3P1beYG7YuMdufo~X2oLbcWnpAZu5yCbnEBEq3TEy7pa5or8sXPu6B5tC6XFocQrk-G4mv0Jv5US~9J7YRbaC3G9PQd9kU4IG1iB-tclKHQnk~NhZAALcNZkKhDbvH4zYxwTQ3ZAAt9JbsGnUHFSbh40243W0xMRfpmt0_&Key-Pair-Id=APKAIKAIRXBA2H7FXITA",
       "coverUrl": "https://i.audiomack.com/elgrandetoto/f38014b3e9.webp?width=360",
       "categoryName": "أغاني مغربية",
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": false,
+      "rights": null
+    },
+    {
+      "title": "TEST-C4TW-URL",
+      "artistName": null,
+      "albumTitle": null,
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/C4TW-uc7mhw.mp3",
+      "coverUrl": null,
+      "categoryName": null,
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": null,
+      "published": false,
+      "featured": false,
+      "rights": null
+    },
+    {
+      "title": "Nigga",
+      "artistName": "T.I BLAZE",
+      "albumTitle": null,
+      "audioUrl": "https://music.audiomack.com/albums/ti-blaze/el-chapo-9907021/hq/198704851070_01_003__1764290168.m4a?Expires=1792262247&Signature=Yd1xnswLAmv4Hj8l-HEQRhlH-9o2TQt1V45gEhSXzenRjFDA-MP~VzbMq--XePTK7BD5~W3k~KFXEDplm0Ju2yEDEEgCSkJv7pMI0DkPSL8rLrziJc-jAhzixwLSZ5CMX-fm-v0rPReS-owwqsaFpwDea08lUfTYilUzb~74ehk_&Key-Pair-Id=APKAIKAIRXBA2H7FXITA",
+      "coverUrl": "https://i.audiomack.com/ti-blaze/be07f98a7a.webp?width=360",
+      "categoryName": "أغاني جديدة",
+      "description": null,
+      "lyrics": null,
+      "duration": null,
+      "keywords": "",
+      "published": true,
+      "featured": true,
+      "rights": null
+    },
+    {
+      "title": "Hk",
+      "artistName": "Hh",
+      "albumTitle": null,
+      "audioUrl": "https://mp3s.shabakngy.com/m/new/C4TW-uc7mhw.mp3",
+      "coverUrl": "https://i.ytimg.com/vi/C4TW-uc7mhw/hqdefault.jpg",
+      "categoryName": "اغاني Rap",
       "description": null,
       "lyrics": null,
       "duration": null,
