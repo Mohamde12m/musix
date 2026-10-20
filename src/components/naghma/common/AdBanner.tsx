@@ -11,8 +11,7 @@ interface Ad {
   linkUrl: string
 }
 
-// AdSense Publisher ID — استبدله بمعرّفك من Google AdSense
-// مثال: ca-pub-1234567890123456
+// AdSense Publisher ID
 const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID || ''
 
 // مكوّن إعلان AdSense (بانر)
@@ -21,6 +20,26 @@ export function AdSenseBanner({ slot = 'auto', format = 'auto' }: { slot?: strin
   return (
     <div className="my-3 overflow-hidden rounded-2xl">
       <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client={ADSENSE_ID} data-ad-slot={slot} data-ad-format={format} data-full-width-responsive="true" />
+    </div>
+  )
+}
+
+// مكوّن إعلان Adsterra (Native Banner)
+function AdsterraBanner() {
+  useEffect(() => {
+    // تفعيل إعلان Adsterra بعد تحميل الصفحة
+    try {
+      const script = document.createElement('script')
+      script.async = true
+      script.setAttribute('data-cfasync', 'false')
+      script.src = 'https://bauval.org/21/b107567049babbd9d8c92a1d06179f82'
+      document.body.appendChild(script)
+    } catch {}
+  }, [])
+
+  return (
+    <div className="my-3 overflow-hidden rounded-2xl border border-border/40 p-2">
+      <div id="container-b107567049babbd9d8c92a1d06179f82" className="min-h-[90px] w-full" />
     </div>
   )
 }
@@ -81,10 +100,17 @@ export function SelfAd({ position = 'home' }: { position?: string }) {
   )
 }
 
-// مكوّن شامل: يعرض AdSense إذا توفر، وإلا يعرض إعلانًا ذاتيًا
+// مكوّن شامل: يعرض الإعلانات حسب الأولوية
+// 1) Adsterra (نشط دائمًا) 2) AdSense (إذا توفر) 3) إعلان ذاتي
 export function AdBanner({ position = 'home' }: { position?: string }) {
-  if (ADSENSE_ID) {
-    return <AdSenseBanner slot={position} />
-  }
-  return <SelfAd position={position} />
+  return (
+    <>
+      {/* إعلان Adsterra — نشط دائمًا */}
+      <AdsterraBanner />
+      {/* إعلان AdSense — يظهر إذا ضُبط NEXT_PUBLIC_ADSENSE_ID */}
+      {ADSENSE_ID && <AdSenseBanner slot={position} />}
+      {/* إعلان ذاتي — يظهر إذا أضاف المسؤول إعلانًا */}
+      <SelfAd position={position} />
+    </>
+  )
 }
