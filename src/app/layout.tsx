@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   keywords: ["موسيقى", "أغاني", "MusiX", "راي", "عربية"],
   authors: [{ name: "MusiX" }],
   icons: { icon: "/icon.jpg", apple: "/icon.jpg", shortcut: "/icon.jpg" },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
