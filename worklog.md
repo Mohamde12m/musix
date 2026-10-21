@@ -335,3 +335,37 @@ Stage Summary:
 - src/components/naghma/layout/PageRouter.tsx (إضافة case 'admin-settings')
 - src/components/naghma/pages/ProfilePage.tsx (إعادة تصميم قسم «تواصل معي» + جلب من API)
 - src/components/naghma/admin/AdminApp.tsx (إضافة SettingsView + تحديث SUB_PAGES و iconFor/labelFor)
+
+---
+Task ID: 8
+Agent: Z.ai Code (main)
+Task: نشر التغييرات على موقع Vercel الإنتاجي (https://musix-livid.vercel.app) - السبب: كانت التغييرات محلية فقط ولم تُنشر بعد.
+
+Work Log:
+- قرأت العمل السابق في worklog.md
+- اكتشفت أن هناك 38 commits محلية لم تُنشر إلى GitHub (origin/main)
+- اكتشفت أن هناك 3 commits على origin/main لم تكن لدي محليًا (ميزات الإعلانات: AdBanner، RewardedVideoAd، InterstitialAd)
+- عملت git pull --rebase لدمج تغييراتي فوق تغييرات origin
+- حدث تعارض في `src/components/naghma/pages/ProfilePage.tsx` (مرة واحدة في imports) — حُلّ بدمج الـ imports (Lucide icons + RewardedVideoAd)
+- شغّلت lint: نجح بدون أخطاء (تحذير مسبق في SplashScreen فقط)
+- نفّذت `git push origin main` — نجح الـ push!
+- انتظرت 60 ثانية حتى ينتهي Vercel من البناء
+- اختبرت API العام `https://musix-livid.vercel.app/api/settings`:
+  - HTTP 200 ✅
+  - يرجع القيم الصحيحة:
+    - Facebook: url=https://www.facebook.com/share/19oiL3PSdL/, handle=simo.el.awidi ✅
+    - WhatsApp: url=https://wa.me/212713416046, handle=+212713416046 ✅
+    - Instagram: url=https://www.instagram.com/el__aouidi_mohamed?obrf=ZzdlY3lqenUzeG44, handle=el__aouidi_mohamed ✅
+- اختبرت API المسؤول `https://musix-livid.vercel.app/api/admin/settings`:
+  - POST /api/admin/login نجح ✅
+  - GET /api/admin/settings نجح ويرجع القيم من قاعدة بيانات Supabase ✅
+
+Stage Summary:
+- جميع التغييرات منشورة الآن على موقع Vercel الإنتاجي
+- قسم «تواصل معي» الاحترافي ظاهر في صفحة الحساب على https://musix-livid.vercel.app
+- صفحة الإعدادات في لوحة المسؤول تعمل على الإنتاج
+- الروابط الرسمية للمستخدم محفوظة في قاعدة البيانات (Supabase) ومتاحة عبر API
+- ميزات الإعلانات (AdBanner، RewardedVideoAd، InterstitialAd) محفوظة من الـ origin
+- جميع الميزات السابقة (B&W styling، zoom، الفجوة بين المشغل والشريط، ...) منشورة أيضًا
+
+الموقع المباشر: https://musix-livid.vercel.app
