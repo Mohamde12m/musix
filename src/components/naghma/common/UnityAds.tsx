@@ -104,7 +104,16 @@ export function UnityRewardedAd({ config = DEFAULT_UNITY_CONFIG }: { config?: ty
   const setPoints = useEarningsStore((s) => s.setPoints)
   const REWARD_POINTS = 50
 
-  const start = () => {
+  const start = async () => {
+    // تحقق من تسجيل دخول المستخدم قبل تشغيل الإعلان
+    try {
+      const r = await fetch('/api/auth/check')
+      const d = await r.json()
+      if (!d.user) {
+        toast.info('📝 سجّل دخولك أولاً لربح النقاط! اضغط زر "إنشاء حساب"')
+        return
+      }
+    } catch {}
     setLoading(true)
     setShow(true)
     setClaimed(false)
