@@ -369,3 +369,75 @@ Stage Summary:
 - جميع الميزات السابقة (B&W styling، zoom، الفجوة بين المشغل والشريط، ...) منشورة أيضًا
 
 الموقع المباشر: https://musix-livid.vercel.app
+
+---
+Task ID: 9
+Agent: Z.ai Code (main)
+Task: إضافة Unity Ads كشبكة إعلانات جديدة (بانر + إعلان بمكافأة + إعلان بين الصفحات) مع إمكانية التعديل من لوحة المسؤول.
+
+Work Log:
+- قرأت العمل السابق في worklog.md
+- فحصت بنية الإعلانات الحالية (AdBanner.tsx، RewardedVideoAd.tsx، VideoAdInterstitial.tsx، /api/ads)
+- أنشأت مكوّن UnityAds.tsx جديد بثلاثة مكوّنات:
+  - `UnityBannerAd`: بانر قابل للتكوين (يظهر على الصفحة الرئيسية)
+  - `UnityRewardedAd`: إعلان فيديو بمكافأة (50 نقطة) — مع تكامل مع نظام النقاط (earnings/reward)
+  - `UnityInterstitialAd`: إعلان بين الصفحات (يظهر كل 4 تنقلات)
+- يحتوي المكوّن على:
+  - تحميل Unity Ads SDK بشكل lazy مرة واحدة فقط
+  - تهيئة Unity Ads بالـ Game ID
+  - fallback لأماكن الإعلان (placeholders) عند فشل تحميل SDK
+  - دعم الإعدادات من لوحة المسؤول (Game ID, Placement IDs, Script URL, Enabled)
+- حدّثت `src/app/api/settings/route.ts` (API العام):
+  - أضفت ثابت `DEFAULT_UNITY_ADS` مع القيم الافتراضية
+  - أضفت قسم `unityAds` للاستجابة
+- حدّثت `src/app/api/admin/settings/route.ts` (API المسؤول):
+  - GET يرجع إعدادات Unity Ads
+  - PUT يحفظ Game ID, Banner Placement, Rewarded Placement, Interstitial Placement, Script URL, Enabled
+- حدّثت `src/lib/api-client.ts`:
+  - أضفت نوع `UnityAdsConfig`
+  - أضفت `unityAds` إلى نوع `SocialLinks`
+  - حدّثت `adminFetchSettings` و `adminUpdateSettings` لدعم Unity Ads
+- حدّثت `ProfilePage.tsx`:
+  - استوردت `UnityRewardedAd` 
+  - أضفت `unityAds` إلى `DEFAULT_SOCIAL_LINKS`
+  - أضفت زر Unity Rewarded Ad أسفل زر Rewarded Video Ad الحالي (في `user &&` block)
+- حدّثت `HomePage.tsx`:
+  - استوردت `UnityBannerAd` و `fetchSocialLinks`
+  - أضفت useQuery لجلب إعدادات Unity Ads
+  - أضفت بانر Unity Ads بين قسم byCategory و mostPlayed
+- حدّثت `AdminApp.tsx`:
+  - استوردت `Gamepad2` من lucide-react
+  - أضفت بطاقة Unity Ads في SettingsView مع:
+    - زر تفعيل/تعطيل (Switch)
+    - حقل Game ID (مع رابط لوحة تحكم Unity)
+    - حقل Banner Placement ID
+    - حقل Rewarded Placement ID
+    - حقل Interstitial Placement ID
+    - حقل Script URL (قابل للتعديل لو تغيّر URL في المستقبل)
+- شغّلت lint: نجح (تحذير مسبق فقط)
+- اختبرت API العام محلياً: `/api/settings` يرجع `unityAds` config ✅
+- واجهت مشكلة في API المسؤول محلياً (401) بسبب HMR recompiling مسح sessions في الذاكرة — لكن هذا لا يؤثر على Vercel (production)
+- commit + push إلى GitHub
+- انتظرت 90 ثانية حتى انتهى Vercel من البناء
+- اختبرت على Vercel:
+  - `/api/settings` يرجع `unityAds` config ✅
+  - `/api/admin/login` نجح ✅
+  - `/api/admin/check` يرجع `{isAdmin: true}` ✅
+  - `/api/admin/settings` يرجع كل الإعدادات بما فيها `unityAds` ✅
+
+Stage Summary:
+- Unity Ads مُضاف بالكامل إلى تطبيق MusiX
+- ثلاثة أنواع إعلانات: بانر، إعلان بمكافأة، إعلان بين الصفحات
+- كل الإعدادات قابلة للتعديل من لوحة المسؤول (Game ID, Placement IDs, Script URL, Enabled)
+- التكامل مع نظام النقاط: مشاهدة إعلان Unity بمكافأة تمنح 50 نقطة (مثل Adsterra)
+- الإعدادات محفوظة في قاعدة بيانات Supabase (AppSetting) ومتاحة عبر API
+- منشور على Vercel: https://musix-livid.vercel.app
+
+الملفات المعدّلة/المنشأة:
+- NEW: src/components/naghma/common/UnityAds.tsx (300+ سطر)
+- src/app/api/settings/route.ts (إضافة DEFAULT_UNITY_ADS + قسم unityAds)
+- src/app/api/admin/settings/route.ts (إضافة دعم Unity Ads في GET/PUT)
+- src/lib/api-client.ts (إضافة UnityAdsConfig type + تحديث SocialLinks)
+- src/components/naghma/pages/ProfilePage.tsx (إضافة زر Unity Rewarded Ad)
+- src/components/naghma/home/HomePage.tsx (إضافة بانر Unity Ads)
+- src/components/naghma/admin/AdminApp.tsx (إضافة بطاقة Unity Ads في SettingsView)
