@@ -6,7 +6,7 @@ export const DEFAULT_SOCIAL_LINKS = {
   facebook: {
     url: 'https://www.facebook.com/share/19oiL3PSdL/',
     name: 'فيسبوك',
-    handle: 'MusiX',
+    handle: 'simo.el.awidi',
   },
   whatsapp: {
     url: 'https://wa.me/212713416046',
