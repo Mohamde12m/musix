@@ -20,6 +20,16 @@ export const DEFAULT_SOCIAL_LINKS = {
   },
 }
 
+// القيم الافتراضية لإعدادات Unity Ads
+export const DEFAULT_UNITY_ADS = {
+  gameId: '',
+  bannerPlacementId: 'banner',
+  rewardedPlacementId: 'rewardedVideo',
+  interstitialPlacementId: 'video',
+  enabled: false,
+  scriptUrl: 'https://cdn.unityads.unity3d.com/sdk/unityads-web-1.0.0.min.js',
+}
+
 // ذاكرة مؤقتة محلية (تُفرغ عند إعادة تشغيل الخادم)
 let cache: { data: any; ts: number } | null = null
 const CACHE_TTL = 60_000 // دقيقة واحدة
@@ -55,11 +65,22 @@ export async function GET() {
         name: 'انستقرام',
         handle: map['social_instagram_handle'] || DEFAULT_SOCIAL_LINKS.instagram.handle,
       },
+      unityAds: {
+        gameId: map['unity_game_id'] || DEFAULT_UNITY_ADS.gameId,
+        bannerPlacementId: map['unity_banner_placement'] || DEFAULT_UNITY_ADS.bannerPlacementId,
+        rewardedPlacementId: map['unity_rewarded_placement'] || DEFAULT_UNITY_ADS.rewardedPlacementId,
+        interstitialPlacementId: map['unity_interstitial_placement'] || DEFAULT_UNITY_ADS.interstitialPlacementId,
+        enabled: map['unity_enabled'] === 'true',
+        scriptUrl: map['unity_script_url'] || DEFAULT_UNITY_ADS.scriptUrl,
+      },
     }
     cache = { data, ts: Date.now() }
     return NextResponse.json(data)
   } catch {
     // في حالة فشل الاتصال بقاعدة البيانات، أرجع القيم الافتراضية
-    return NextResponse.json(DEFAULT_SOCIAL_LINKS)
+    return NextResponse.json({
+      ...DEFAULT_SOCIAL_LINKS,
+      unityAds: DEFAULT_UNITY_ADS,
+    })
   }
 }

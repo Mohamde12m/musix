@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { Play, Heart, Bell, Search, Sparkles, TrendingUp, Clock, Zap, Wallet } from 'lucide-react'
-import { fetchHomeData } from '@/lib/api-client'
+import { fetchHomeData, fetchSocialLinks } from '@/lib/api-client'
 import { usePlayerStore } from '@/lib/stores/player-store'
 import { useNavStore } from '@/lib/stores/nav-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
@@ -15,11 +15,15 @@ import { SectionHeader } from '@/components/naghma/common/SectionHeader'
 import { HScroll } from '@/components/naghma/common/EmptyState'
 import { EmptyState, SkeletonCard } from '@/components/naghma/common/EmptyState'
 import { AdBanner } from '@/components/naghma/common/AdBanner'
+import { UnityBannerAd } from '@/components/naghma/common/UnityAds'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 
 export function HomePage() {
   const { data, isLoading } = useQuery({ queryKey: ['home'], queryFn: fetchHomeData, staleTime: 60_000 })
+  // جلب إعدادات Unity Ads من API
+  const { data: socialLinks } = useQuery({ queryKey: ['social-links'], queryFn: fetchSocialLinks, staleTime: 5 * 60_000 })
+  const unityAdsConfig = socialLinks?.unityAds
   const navigate = useNavStore((s) => s.navigate)
   const playTrack = usePlayerStore((s) => s.playTrack)
   const toggleFav = useLibraryStore((s) => s.toggleFavorite)
@@ -120,6 +124,9 @@ export function HomePage() {
               <HScroll>{sec.songs.map((s) => <SongCard key={s.id} song={s} queue={sec.songs} />)}</HScroll>
             </section>
           ))}
+
+          {/* بانر Unity Ads */}
+          {unityAdsConfig && <UnityBannerAd config={unityAdsConfig} />}
 
           {data.mostPlayed.length > 0 && (
             <section>

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check, Download, Upload, Settings as SettingsIcon, Save } from 'lucide-react'
+import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check, Download, Upload, Settings as SettingsIcon, Save, Gamepad2 } from 'lucide-react'
 import { useNavStore, type PageId } from '@/lib/stores/nav-store'
 import { adminCheck, adminLogout, adminFetchSongs, adminCreateSong, adminUpdateSong, adminDeleteSong, adminFetchArtists, adminUpdateArtist, adminFetchCategories, adminCreateCategory, adminDeleteCategory, adminUpdateCategory, adminExportBackup, adminImportBackup, adminFetchSettings, adminUpdateSettings } from '@/lib/api-client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -379,7 +379,12 @@ function CategoryFormFields({ data, onChange }: { data: { name: string; descript
 function SettingsView() {
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({ queryKey: ['admin-settings'], queryFn: adminFetchSettings })
-  const [form, setForm] = useState<{ facebook: { url: string; handle: string }; whatsapp: { url: string; handle: string }; instagram: { url: string; handle: string } } | null>(null)
+  const [form, setForm] = useState<{
+    facebook: { url: string; handle: string }
+    whatsapp: { url: string; handle: string }
+    instagram: { url: string; handle: string }
+    unityAds: { gameId: string; bannerPlacementId: string; rewardedPlacementId: string; interstitialPlacementId: string; enabled: boolean; scriptUrl: string }
+  } | null>(null)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -388,6 +393,14 @@ function SettingsView() {
         facebook: { url: data.facebook.url, handle: data.facebook.handle },
         whatsapp: { url: data.whatsapp.url, handle: data.whatsapp.handle },
         instagram: { url: data.instagram.url, handle: data.instagram.handle },
+        unityAds: {
+          gameId: data.unityAds?.gameId || '',
+          bannerPlacementId: data.unityAds?.bannerPlacementId || 'banner',
+          rewardedPlacementId: data.unityAds?.rewardedPlacementId || 'rewardedVideo',
+          interstitialPlacementId: data.unityAds?.interstitialPlacementId || 'video',
+          enabled: data.unityAds?.enabled || false,
+          scriptUrl: data.unityAds?.scriptUrl || 'https://cdn.unityads.unity3d.com/sdk/unityads-web-1.0.0.min.js',
+        },
       })
     }
   }, [data, form])
@@ -395,6 +408,11 @@ function SettingsView() {
   const set = (platform: 'facebook' | 'whatsapp' | 'instagram', field: 'url' | 'handle', v: string) => {
     if (!form) return
     setForm({ ...form, [platform]: { ...form[platform], [field]: v } })
+  }
+
+  const setUnity = (field: keyof NonNullable<typeof form>['unityAds'], v: string | boolean) => {
+    if (!form) return
+    setForm({ ...form, unityAds: { ...form.unityAds, [field]: v } })
   }
 
   const handleSave = async (e: React.FormEvent) => {
@@ -470,6 +488,42 @@ function SettingsView() {
           <Field label="اسم المستخدم (Handle)">
             <Input value={form.instagram.handle} onChange={(e) => set('instagram', 'handle', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="el__aouidi_mohamed" />
           </Field>
+        </div>
+
+        {/* ====== Unity Ads ====== */}
+        <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-950/30 to-indigo-950/20 p-3 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-600 to-indigo-700">
+                <Gamepad2 className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold">Unity Ads</h2>
+                <p className="text-[10px] text-muted-foreground">شبكة إعلانات الألعاب</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="unity-enabled" className="text-[10px] text-muted-foreground">تفعيل</Label>
+              <Switch id="unity-enabled" checked={form.unityAds.enabled} onCheckedChange={(c) => setUnity('enabled', c)} />
+            </div>
+          </div>
+          <Field label="Game ID" help="احصل عليه من https://dashboard.unity3d.com">
+            <Input value={form.unityAds.gameId} onChange={(e) => setUnity('gameId', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="1234567" />
+          </Field>
+          <div className="grid grid-cols-1 gap-3">
+            <Field label="Banner Placement ID">
+              <Input value={form.unityAds.bannerPlacementId} onChange={(e) => setUnity('bannerPlacementId', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="banner" />
+            </Field>
+            <Field label="Rewarded Placement ID" help="معرّف إعلان الفيديو بمكافأة">
+              <Input value={form.unityAds.rewardedPlacementId} onChange={(e) => setUnity('rewardedPlacementId', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="rewardedVideo" />
+            </Field>
+            <Field label="Interstitial Placement ID" help="معرّف الإعلان بين الصفحات">
+              <Input value={form.unityAds.interstitialPlacementId} onChange={(e) => setUnity('interstitialPlacementId', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="video" />
+            </Field>
+            <Field label="Script URL" help="رابط تحميل Unity Ads SDK">
+              <Input value={form.unityAds.scriptUrl} onChange={(e) => setUnity('scriptUrl', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://cdn.unityads.unity3d.com/..." />
+            </Field>
+          </div>
         </div>
 
         <Button type="submit" disabled={saving} className="h-12 w-full rounded-2xl gradient-purple text-white text-sm font-bold tap-scale">
