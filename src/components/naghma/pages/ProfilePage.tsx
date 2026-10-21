@@ -158,11 +158,13 @@ export function ProfilePage() {
         )}
       </header>
 
-      {/* إعلان بمكافأة — يظهر دائماً لكل المستخدمين (حتى الزوار) */}
-      <div className="space-y-2">
-        <RewardedVideoAd />
-        <UnityRewardedAd config={links.unityAds} />
-      </div>
+      {/* إعلان بمكافأة — يظهر للمسؤول فقط */}
+      {isAdmin && (
+        <div className="space-y-2">
+          <RewardedVideoAd />
+          <UnityRewardedAd config={links.unityAds} />
+        </div>
+      )}
 
       {/* بطاقة الأرباح */}
       {user && balance && (
