@@ -44,7 +44,7 @@ function renderPage(page: PageId) {
     case 'playlist': return <PlaylistDetailPage />
     case 'assistant': return <AssistantPage />
     case 'admin-login': return <AdminLogin />
-    case 'admin-dashboard': case 'admin-songs': case 'admin-add-song': case 'admin-edit-song': case 'admin-artists': case 'admin-categories': return <AdminApp />
+    case 'admin-dashboard': case 'admin-songs': case 'admin-add-song': case 'admin-edit-song': case 'admin-artists': case 'admin-categories': case 'admin-settings': return <AdminApp />
     default: return <HomePage />
   }
 }

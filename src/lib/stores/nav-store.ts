@@ -7,7 +7,7 @@ export type PageId =
   | 'search' | 'song' | 'artist' | 'category' | 'playlist'
   | 'assistant' | 'settings'
   | 'admin-login' | 'admin-dashboard' | 'admin-songs' | 'admin-add-song'
-  | 'admin-edit-song' | 'admin-artists' | 'admin-categories'
+  | 'admin-edit-song' | 'admin-artists' | 'admin-categories' | 'admin-settings'
 
 export interface NavParams {
   songId?: string

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useNavStore } from '@/lib/stores/nav-store'
 import { useLibraryStore } from '@/lib/stores/library-store'
 import { useTheme } from 'next-themes'
@@ -14,13 +15,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { motion } from 'framer-motion'
 
-// ====== روابط مواقع التواصل الاجتماعي — عدّل هذه الروابط بحساباتك ======
-const SOCIAL_LINKS = {
-  facebook: 'https://facebook.com/musix',      // ← ضع رابط صفحتك على فيسبوك
-  whatsapp: 'https://wa.me/212600000000',      // ← ضع رقمك بصيغة دولية بدون +
-  instagram: 'https://instagram.com/musix',     // ← ضع رابط حسابك على انستقرام
+// ====== القيم الافتراضية للروابط — تُستخدم إذا لم تكن هناك قيم في قاعدة البيانات ======
+const DEFAULT_SOCIAL_LINKS: SocialLinks = {
+  facebook: { url: 'https://www.facebook.com/share/19oiL3PSdL/', name: 'فيسبوك', handle: 'MusiX' },
+  whatsapp: { url: 'https://wa.me/212713416046', name: 'واتساب', handle: '+212713416046' },
+  instagram: { url: 'https://www.instagram.com/el__aouidi_mohamed?obrf=ZzdlY3lqenUzeG44', name: 'انستقرام', handle: 'el__aouidi_mohamed' },
 }
-// ====================================================================
+// =====================================================================================
 
 // أيقونة واتساب (SVG مخصص - Lucide لا يحتوي على أيقونة WhatsApp رسمية)
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -29,6 +30,13 @@ function WhatsAppIcon({ className }: { className?: string }) {
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.585 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
     </svg>
   )
+}
+
+// قيم ألوان العلامات التجارية الرسمية
+const BRAND_COLORS = {
+  facebook: { from: '#1877F2', to: '#0a4da8', solid: '#1877F2' },
+  whatsapp: { from: '#25D366', to: '#128C3F', solid: '#25D366' },
+  instagram: { from: '#F58529', via: '#DD2A7B', to: '#8134AF', solid: '#DD2A7B' },
 }
 
 export function ProfilePage() {
@@ -45,6 +53,14 @@ export function ProfilePage() {
   const [loginMode, setLoginMode] = useState<'login' | 'register'>('login')
   const [form, setForm] = useState({ email: '', password: '', displayName: '' })
   const [loading, setLoading] = useState(false)
+  // جلب روابط التواصل الاجتماعي من API مع fallback للقيم الافتراضية
+  const { data: socialLinks } = useQuery({
+    queryKey: ['social-links'],
+    queryFn: fetchSocialLinks,
+    staleTime: 5 * 60_000, // 5 دقائق
+    placeholderData: DEFAULT_SOCIAL_LINKS,
+  })
+  const links = socialLinks || DEFAULT_SOCIAL_LINKS
   const [showWithdraw, setShowWithdraw] = useState(false)
   const [withdrawForm, setWithdrawForm] = useState({ paymentMethod: '', paymentDetails: '' })
 
@@ -192,48 +208,108 @@ export function ProfilePage() {
           ) : <Row icon={Shield} label="دخول المسؤول" onClick={() => navigate('admin-login')}><ChevronLeft className="h-4 w-4 text-muted-foreground" /></Row>}
         </Section>
 
-        {/* مواقع التواصل الاجتماعي */}
-        <div>
-          <h3 className="mb-1.5 px-1 text-xs font-medium text-muted-foreground">تابعنا على مواقع التواصل</h3>
-          <div className="grid grid-cols-3 gap-2">
-            <a
-              href={SOCIAL_LINKS.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/40 bg-card/40 p-3 tap-scale hover:bg-accent/30 transition-colors"
-              aria-label="فيسبوك"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full transition-transform group-hover:scale-110" style={{ background: 'linear-gradient(135deg, #1877F2, #0a4da8)' }}>
-                <Facebook className="h-5 w-5 text-white" />
-              </span>
-              <span className="text-[10px] font-medium text-muted-foreground">فيسبوك</span>
-            </a>
-            <a
-              href={SOCIAL_LINKS.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/40 bg-card/40 p-3 tap-scale hover:bg-accent/30 transition-colors"
-              aria-label="واتساب"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full transition-transform group-hover:scale-110" style={{ background: 'linear-gradient(135deg, #25D366, #128C3F)' }}>
-                <WhatsAppIcon className="h-5 w-5 text-white" />
-              </span>
-              <span className="text-[10px] font-medium text-muted-foreground">واتساب</span>
-            </a>
-            <a
-              href={SOCIAL_LINKS.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/40 bg-card/40 p-3 tap-scale hover:bg-accent/30 transition-colors"
-              aria-label="انستقرام"
-            >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full transition-transform group-hover:scale-110" style={{ background: 'linear-gradient(135deg, #F58529, #DD2A7B 50%, #8134AF 100%)' }}>
-                <Instagram className="h-5 w-5 text-white" />
-              </span>
-              <span className="text-[10px] font-medium text-muted-foreground">انستقرام</span>
-            </a>
+        {/* ====== قسم «تواصل معي» الاحترافي ====== */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-card/60 to-card/30 backdrop-blur"
+        >
+          {/* ترويسة القسم */}
+          <div className="relative px-4 py-3 text-center">
+            <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(ellipse at 50% 0%, oklch(0.65 0.28 295 / 0.35), transparent 70%)' }} />
+            <div className="relative">
+              <h3 className="text-base font-bold gradient-purple-text">تواصل معي</h3>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">تابعنا على منصات التواصل الاجتماعي</p>
+            </div>
           </div>
-        </div>
+
+          {/* البطاقات الثلاث */}
+          <div className="grid grid-cols-3 gap-2 p-3 pt-1">
+            {/* فيسبوك */}
+            <motion.a
+              href={links.facebook.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              className="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border border-border/40 bg-card/50 p-3 text-center"
+              aria-label={`فيسبوك - ${links.facebook.handle}`}
+            >
+              {/* توهّج خلفي بلون العلامة */}
+              <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-25" style={{ background: `radial-gradient(circle at 50% 50%, ${BRAND_COLORS.facebook.solid}, transparent 70%)` }} />
+              <motion.span
+                whileHover={{ rotate: -8 }}
+                className="relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${BRAND_COLORS.facebook.from}, ${BRAND_COLORS.facebook.to})` }}
+              >
+                <Facebook className="h-6 w-6 text-white" />
+              </motion.span>
+              <div className="relative min-w-0">
+                <p className="text-xs font-bold">فيسبوك</p>
+                <p className="truncate text-[10px] text-muted-foreground" dir="ltr">{links.facebook.handle}</p>
+              </div>
+            </motion.a>
+
+            {/* واتساب */}
+            <motion.a
+              href={links.whatsapp.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              className="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border border-border/40 bg-card/50 p-3 text-center"
+              aria-label={`واتساب - ${links.whatsapp.handle}`}
+            >
+              <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-25" style={{ background: `radial-gradient(circle at 50% 50%, ${BRAND_COLORS.whatsapp.solid}, transparent 70%)` }} />
+              <motion.span
+                whileHover={{ rotate: 8 }}
+                className="relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${BRAND_COLORS.whatsapp.from}, ${BRAND_COLORS.whatsapp.to})` }}
+              >
+                <WhatsAppIcon className="h-6 w-6 text-white" />
+              </motion.span>
+              <div className="relative min-w-0">
+                <p className="text-xs font-bold">واتساب</p>
+                <p className="truncate text-[10px] text-muted-foreground" dir="ltr">{links.whatsapp.handle}</p>
+              </div>
+            </motion.a>
+
+            {/* انستقرام */}
+            <motion.a
+              href={links.instagram.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ y: -3 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              className="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border border-border/40 bg-card/50 p-3 text-center"
+              aria-label={`انستقرام - ${links.instagram.handle}`}
+            >
+              <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-25" style={{ background: `radial-gradient(circle at 50% 50%, ${BRAND_COLORS.instagram.solid}, transparent 70%)` }} />
+              <motion.span
+                whileHover={{ rotate: -8 }}
+                className="relative flex h-12 w-12 items-center justify-center rounded-full shadow-lg"
+                style={{ background: `linear-gradient(135deg, ${BRAND_COLORS.instagram.from}, ${BRAND_COLORS.instagram.via} 50%, ${BRAND_COLORS.instagram.to})` }}
+              >
+                <Instagram className="h-6 w-6 text-white" />
+              </motion.span>
+              <div className="relative min-w-0">
+                <p className="text-xs font-bold">انستقرام</p>
+                <p className="truncate text-[10px] text-muted-foreground" dir="ltr">{links.instagram.handle}</p>
+              </div>
+            </motion.a>
+          </div>
+
+          {/* شريط سفلي بلمسة لونية */}
+          <div className="flex h-1 w-full">
+            <div className="flex-1" style={{ background: BRAND_COLORS.facebook.solid }} />
+            <div className="flex-1" style={{ background: BRAND_COLORS.whatsapp.solid }} />
+            <div className="flex-1" style={{ background: BRAND_COLORS.instagram.solid }} />
+          </div>
+        </motion.div>
       </div>
       <p className="mt-6 text-center text-[10px] text-muted-foreground/60">MusiX — استمع واربح 🎵💰</p>
 

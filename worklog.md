@@ -260,3 +260,78 @@ Stage Summary:
 
 الملفات المعدّلة:
 - src/components/naghma/pages/ProfilePage.tsx
+
+---
+Task ID: 7
+Agent: Z.ai Code (main)
+Task: إنشاء قسم «تواصل معي» احترافي مع إمكانية التعديل من لوحة تحكم المسؤول، باستخدام الروابط الرسمية المقدمة.
+
+Work Log:
+- قرأت العمل السابق في worklog.md
+- لاحظت أن نموذج `AppSetting` (id/value) موجود مسبقاً في schema.prisma — استخدمته لتخزين الروابط
+- أنشأت ملفّي API:
+  - `src/app/api/settings/route.ts` (GET عام): يرجع الروابط مع fallback للقيم الافتراضية، مع ذاكرة مؤقتة لمدة دقيقة
+  - `src/app/api/admin/settings/route.ts` (GET/PUT للمسؤول): يقرأ ويحدّث الروابط في قاعدة البيانات
+- أضفت القيم الافتراضية الرسمية المقدمة من المستخدم:
+  - Facebook: https://www.facebook.com/share/19oiL3PSdL/
+  - WhatsApp: https://wa.me/212713416046
+  - Instagram: https://www.instagram.com/el__aouidi_mohamed?obrf=ZzdlY3lqenUzeG44
+- أضفت في api-client.ts ثلاث دوال: `fetchSocialLinks`, `adminFetchSettings`, `adminUpdateSettings`
+- أضفت نوع `SocialLinks` للـ TypeScript
+- أعدت تصميم قسم «تواصل معي» في ProfilePage.tsx بتصميم احترافي:
+  - ترويسة بخلفية radial-gradient بنفسجية و glow
+  - 3 بطاقات motion.a مع whileTap={scale:0.92} و whileHover={y:-3} (Framer Motion)
+  - كل بطاقة:
+    - دائرة كبيرة (h-12 w-12) بتدرّج لون العلامة التجارية
+    - توهّج خلفي يظهر عند الـ hover بلون العلامة
+    - الأيقونة تدور قليلاً عند الـ hover
+    - اسم المنصة بالخط العريض
+    - اسم الحساب/المعرّف أسفلها بـ dir="ltr"
+  - شريط ألوان سفلي بلمسة لونية تجمع الألوان الثلاثة
+- أضفت `admin-settings` إلى:
+  - `PageId` في nav-store.ts
+  - `SUB_PAGES` في AdminApp.tsx
+  - `renderPage` في PageRouter.tsx (هذا كان السبب في إعادة توجيه غير مقصودة للصفحة الرئيسية — تم اكتشافه وإصلاحه)
+- أضفت `SettingsView` في AdminApp.tsx — صفحة كاملة بـ:
+  - 3 بطاقات لكل منصة مع أيقونة ملوّنة + حقل URL + حقل Handle/Name
+  - زر حفظ بنمط gradient-purple مع حالة loading
+  - تنبيه تفصيلي بالعربية يشرح أن الروابط تظهر في صفحة الحساب
+  - تنبيه للصيغة الصحيحة لرقم واتساب (بدون + وبدون أصفار محلية)
+- اختبرت بـ Agent Browser:
+  - تحققت من أن API العام `GET /api/settings` يرجع القيم الافتراضية الصحيحة ✅
+  - تحققت من أن API المسؤول `PUT /api/admin/settings` يحفظ التعديلات في قاعدة البيانات (عدّلت handle الفيسبوك من "MusiX" إلى "MusiX Aouidi" ثم تحققت من التحديث فوراً) ✅
+  - تحققت من عمل إبطال الكاش (التحديث ظهر فوراً في API العام) ✅
+  - اختبرت الروابط الثلاثة بـ curl:
+    - Facebook: 200 OK → يُعيد توجيهاً إلى صفحة `simo.el.awidi` ✅
+    - WhatsApp: 200 OK → يُعيد توجيهاً إلى `api.whatsapp.com/send/?phone=212713416046` ✅
+    - Instagram: 429 (محدودية المعدل لطلبات السيرفر — لكنه يعمل في المتصفح الحقيقي) ⚠️
+  - تحققت من ظهور قسم «تواصل معي» في صفحة الحساب بـ VLM:
+    - "3 بطاقات بأيقونات ملوّنة (إنستغرام تدرّجي، واتساب أخضر، فيسبوك أزرق)" ✅
+    - "أسماء الحسابات ظاهرة أسفل كل أيقونة" ✅
+    - "التصميم احترافي وأنيق" ✅
+    - "شريط ملون في الأسفل يجمع الألوان الثلاثة" ✅
+  - تحققت من ظهور صفحة الإعدادات في لوحة المسؤول بـ VLM:
+    - "بطاقات لروابط واتساب وانستقرام" ✅
+    - "القيم المعبّأة: https://wa.me/212713416046 و +212713416046 للواتساب" ✅
+    - "https://www.instagram.com/el__aouidi_mohamed و el__aouidi_mohamed للانستقرام" ✅
+    - "زر حفظ بنفسجي في الأسفل" ✅
+
+Stage Summary:
+- قسم «تواصل معي» الاحترافي منفّذ في صفحة الحساب بتصميم عصري وأنيق
+- الروابط تُخزّن في قاعدة البيانات (AppSetting) ويمكن تعديلها من لوحة تحكم المسؤول
+- القيم الافتراضية المدمجة تستخدم الروابط الرسمية للمستخدم (Facebook share/19oiL3PSdL, WhatsApp 212713416046, Instagram el__aouidi_mohamed)
+- ذاكرة مؤقتة لمدة دقيقة تقلل من ضغط قاعدة البيانات
+- إبطال كاش تلقائي عند التحديث
+- Framer Motion animations: whileTap + whileHover للأزرار
+- ألوان العلامات التجارية الرسمية لكل منصة
+- اسم الحساب ظاهر أسفل كل أيقونة (MusiX Aouidi / +212713416046 / el__aouidi_mohamed)
+- شريط ألوان سفلي بلمسة بصرية
+
+الملفات المعدّلة/المنشأة:
+- NEW: src/app/api/settings/route.ts (GET عام)
+- NEW: src/app/api/admin/settings/route.ts (GET/PUT للمسؤول)
+- src/lib/api-client.ts (إضافة 3 دوال + نوع SocialLinks)
+- src/lib/stores/nav-store.ts (إضافة 'admin-settings' إلى PageId)
+- src/components/naghma/layout/PageRouter.tsx (إضافة case 'admin-settings')
+- src/components/naghma/pages/ProfilePage.tsx (إعادة تصميم قسم «تواصل معي» + جلب من API)
+- src/components/naghma/admin/AdminApp.tsx (إضافة SettingsView + تحديث SUB_PAGES و iconFor/labelFor)

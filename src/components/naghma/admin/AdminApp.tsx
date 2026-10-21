@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check, Download, Upload } from 'lucide-react'
+import { Shield, LogOut, ChevronRight, LayoutDashboard, Music2, Plus, Users, Tags, Loader2, AlertCircle, Home, Star, Eye, EyeOff, Trash2, Pencil, Check, Download, Upload, Settings as SettingsIcon, Save } from 'lucide-react'
 import { useNavStore, type PageId } from '@/lib/stores/nav-store'
-import { adminCheck, adminLogout, adminFetchSongs, adminCreateSong, adminUpdateSong, adminDeleteSong, adminFetchArtists, adminUpdateArtist, adminFetchCategories, adminCreateCategory, adminDeleteCategory, adminUpdateCategory, adminExportBackup, adminImportBackup } from '@/lib/api-client'
+import { adminCheck, adminLogout, adminFetchSongs, adminCreateSong, adminUpdateSong, adminDeleteSong, adminFetchArtists, adminUpdateArtist, adminFetchCategories, adminCreateCategory, adminDeleteCategory, adminUpdateCategory, adminExportBackup, adminImportBackup, adminFetchSettings, adminUpdateSettings } from '@/lib/api-client'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import type { ApiSong } from '@/lib/types'
 
-const SUB_PAGES: PageId[] = ['admin-dashboard', 'admin-songs', 'admin-add-song', 'admin-artists', 'admin-categories']
+const SUB_PAGES: PageId[] = ['admin-dashboard', 'admin-songs', 'admin-add-song', 'admin-artists', 'admin-categories', 'admin-settings']
 
 export function AdminApp() {
   const page = useNavStore((s) => s.page)
@@ -41,13 +41,14 @@ export function AdminApp() {
         {page === 'admin-add-song' && <AddSongView />}
         {page === 'admin-artists' && <ArtistsView />}
         {page === 'admin-categories' && <CategoriesView />}
+        {page === 'admin-settings' && <SettingsView />}
       </main>
     </div>
   )
 }
 
-function iconFor(p: PageId) { return p === 'admin-dashboard' ? <LayoutDashboard className="h-3.5 w-3.5" /> : p === 'admin-songs' ? <Music2 className="h-3.5 w-3.5" /> : p === 'admin-add-song' ? <Plus className="h-3.5 w-3.5" /> : p === 'admin-artists' ? <Users className="h-3.5 w-3.5" /> : <Tags className="h-3.5 w-3.5" /> }
-function labelFor(p: PageId) { return p === 'admin-dashboard' ? 'الرئيسية' : p === 'admin-songs' ? 'الأغاني' : p === 'admin-add-song' ? 'إضافة أغنية' : p === 'admin-artists' ? 'الفنانون' : 'التصنيفات' }
+function iconFor(p: PageId) { return p === 'admin-dashboard' ? <LayoutDashboard className="h-3.5 w-3.5" /> : p === 'admin-songs' ? <Music2 className="h-3.5 w-3.5" /> : p === 'admin-add-song' ? <Plus className="h-3.5 w-3.5" /> : p === 'admin-artists' ? <Users className="h-3.5 w-3.5" /> : p === 'admin-categories' ? <Tags className="h-3.5 w-3.5" /> : <SettingsIcon className="h-3.5 w-3.5" /> }
+function labelFor(p: PageId) { return p === 'admin-dashboard' ? 'الرئيسية' : p === 'admin-songs' ? 'الأغاني' : p === 'admin-add-song' ? 'إضافة أغنية' : p === 'admin-artists' ? 'الفنانون' : p === 'admin-categories' ? 'التصنيفات' : 'الإعدادات' }
 
 function DashboardView() {
   const navigate = useNavStore((s) => s.navigate)
@@ -370,6 +371,117 @@ function CategoryFormFields({ data, onChange }: { data: { name: string; descript
       {data.image.trim() && <div className="flex items-center gap-3 rounded-xl border border-border/40 bg-card/40 p-2.5"><div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-muted ring-1 ring-border/30"><Image src={data.image.trim()} alt="معاينة" fill sizes="96px" className="object-cover" unoptimized /></div><div className="min-w-0 flex-1"><p className="text-xs font-semibold">معاينة الصورة</p><p className="truncate text-[10px] text-muted-foreground">{data.name || 'اسم التصنيف'}</p></div></div>}
       <Field label="رمز تعبيري (احتياطي)" help="يُستخدم إن لم تتوفر صورة"><Input value={data.emoji} onChange={(e) => onChange({ ...data, emoji: e.target.value })} className="h-11" placeholder="🎵" /></Field>
       <Field label="الوصف (اختياري)"><Textarea value={data.description} onChange={(e) => onChange({ ...data, description: e.target.value })} rows={2} /></Field>
+    </div>
+  )
+}
+
+// ====== صفحة الإعدادات — تعديل روابط التواصل الاجتماعي ======
+function SettingsView() {
+  const queryClient = useQueryClient()
+  const { data, isLoading } = useQuery({ queryKey: ['admin-settings'], queryFn: adminFetchSettings })
+  const [form, setForm] = useState<{ facebook: { url: string; handle: string }; whatsapp: { url: string; handle: string }; instagram: { url: string; handle: string } } | null>(null)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (data && !form) {
+      setForm({
+        facebook: { url: data.facebook.url, handle: data.facebook.handle },
+        whatsapp: { url: data.whatsapp.url, handle: data.whatsapp.handle },
+        instagram: { url: data.instagram.url, handle: data.instagram.handle },
+      })
+    }
+  }, [data, form])
+
+  const set = (platform: 'facebook' | 'whatsapp' | 'instagram', field: 'url' | 'handle', v: string) => {
+    if (!form) return
+    setForm({ ...form, [platform]: { ...form[platform], [field]: v } })
+  }
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form) return
+    setSaving(true)
+    try {
+      const res = await adminUpdateSettings(form)
+      if (res.ok) {
+        toast.success('تم حفظ الإعدادات بنجاح')
+        queryClient.invalidateQueries({ queryKey: ['admin-settings'] })
+        queryClient.invalidateQueries({ queryKey: ['social-links'] })
+      } else {
+        toast.error(res.error || 'فشل الحفظ')
+      }
+    } catch (e: any) {
+      toast.error(e?.message || 'خطأ')
+    } finally { setSaving(false) }
+  }
+
+  if (isLoading || !form) return <div className="flex min-h-40 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+
+  return (
+    <div className="space-y-4 pb-10">
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-bold">الإعدادات</h1>
+      </div>
+
+      <form onSubmit={handleSave} className="space-y-4">
+        {/* فيسبوك */}
+        <div className="rounded-2xl border border-border/40 bg-card/40 p-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: 'linear-gradient(135deg, #1877F2, #0a4da8)' }}>
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-white"><path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5c0-1 .604-1 1-1h3V2.5h-3c-2.757 0-5 2-5 5v2.5H6.5v3.98h2.698v8.02Z"/></svg>
+            </div>
+            <h2 className="text-sm font-bold">فيسبوك</h2>
+          </div>
+          <Field label="رابط صفحة فيسبوك">
+            <Input value={form.facebook.url} onChange={(e) => set('facebook', 'url', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://facebook.com/..." required />
+          </Field>
+          <Field label="اسم العرض (Handle)">
+            <Input value={form.facebook.handle} onChange={(e) => set('facebook', 'handle', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="MusiX" />
+          </Field>
+        </div>
+
+        {/* واتساب */}
+        <div className="rounded-2xl border border-border/40 bg-card/40 p-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: 'linear-gradient(135deg, #25D366, #128C3F)' }}>
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.585 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            </div>
+            <h2 className="text-sm font-bold">واتساب</h2>
+          </div>
+          <Field label="رابط المحادثة المباشرة" help="الصيغة: https://wa.me/212XXXXXXXXX (بدون + وبدون أصفار محلية)">
+            <Input value={form.whatsapp.url} onChange={(e) => set('whatsapp', 'url', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://wa.me/212713416046" required />
+          </Field>
+          <Field label="رقم الهاتف (للعرض)">
+            <Input value={form.whatsapp.handle} onChange={(e) => set('whatsapp', 'handle', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="+212713416046" />
+          </Field>
+        </div>
+
+        {/* انستقرام */}
+        <div className="rounded-2xl border border-border/40 bg-card/40 p-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: 'linear-gradient(135deg, #F58529, #DD2A7B 50%, #8134AF)' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 text-white"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </div>
+            <h2 className="text-sm font-bold">انستقرام</h2>
+          </div>
+          <Field label="رابط حساب انستقرام">
+            <Input value={form.instagram.url} onChange={(e) => set('instagram', 'url', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="https://instagram.com/..." required />
+          </Field>
+          <Field label="اسم المستخدم (Handle)">
+            <Input value={form.instagram.handle} onChange={(e) => set('instagram', 'handle', e.target.value)} dir="ltr" className="h-11 text-left" placeholder="el__aouidi_mohamed" />
+          </Field>
+        </div>
+
+        <Button type="submit" disabled={saving} className="h-12 w-full rounded-2xl gradient-purple text-white text-sm font-bold tap-scale">
+          {saving ? <Loader2 className="h-5 w-5 animate-spin ml-2" /> : <Save className="h-5 w-5 ml-2" />}
+          {saving ? 'جارٍ الحفظ...' : 'حفظ الإعدادات'}
+        </Button>
+      </form>
+
+      <div className="rounded-2xl border border-border/40 bg-card/30 p-3 text-xs text-muted-foreground">
+        <AlertCircle className="mb-1 h-4 w-4 text-primary" />
+        <p>تظهر هذه الروابط في قسم «تواصل معي» بصفحة الحساب. التعديلات تُحفظ في قاعدة البيانات وتظهر فورًا لكل المستخدمين.</p>
+      </div>
     </div>
   )
 }

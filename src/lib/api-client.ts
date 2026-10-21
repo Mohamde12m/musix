@@ -111,3 +111,35 @@ export async function adminImportBackup(data: any): Promise<{ ok: boolean; songs
     return { ok: true, ...j }
   } catch (e: any) { return { ok: false, error: e.message } }
 }
+
+// ====== إعدادات التطبيق العامة (روابط التواصل الاجتماعي) ======
+export type SocialLinks = {
+  facebook: { url: string; name: string; handle: string }
+  whatsapp: { url: string; name: string; handle: string }
+  instagram: { url: string; name: string; handle: string }
+}
+
+export async function fetchSocialLinks(): Promise<SocialLinks> {
+  return jfetch(`${API}/settings`)
+}
+
+export async function adminFetchSettings(): Promise<{
+  facebook: { url: string; handle: string }
+  whatsapp: { url: string; handle: string }
+  instagram: { url: string; handle: string }
+}> {
+  return jfetch(`${API}/admin/settings`)
+}
+
+export async function adminUpdateSettings(data: {
+  facebook: { url: string; handle: string }
+  whatsapp: { url: string; handle: string }
+  instagram: { url: string; handle: string }
+}): Promise<{ ok: boolean; count?: number; error?: string }> {
+  try {
+    const res = await fetch(`${API}/admin/settings`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+    const j = await res.json()
+    if (!res.ok) return { ok: false, error: j.error }
+    return { ok: true, count: j.count }
+  } catch (e: any) { return { ok: false, error: e.message } }
+}
