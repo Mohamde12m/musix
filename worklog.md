@@ -129,3 +129,43 @@ Stage Summary:
 - مقابض شريط التمرير (seek + volume) في FullPlayer لها حافة بيضاء 2px حول اللون البنفسجي الداخلي
 - جميع المؤشرات المنزلقة الآن لها "بلون الحواف مختلف" كما طلب المستخدم
 - التغييرات تركز على وضع الهاتف العمودي (iPhone 14 viewport)
+
+---
+Task ID: 4
+Agent: Z.ai Code (main)
+Task: إضافة زوم خفيف (5-10%) على صور الأغلفة (YouTube thumbnails) في كل التطبيق لملء الحاويات بالكامل بدون ظهور خلفية سوداء.
+
+Work Log:
+- قرأت العمل السابق في worklog.md لمعرفة السياق
+- بحثت عن كل صور الأغلفة (object-cover) في src/ — ووجدت 8 أماكن تعرض صور أغلفة الأغاني
+- طبّعت الزوم على النحو التالي:
+  - **scale-110** (10% زوم) للصور الصغيرة (حجم ≤ 56px): SongCard (list variant), MiniPlayer, FullPlayer queue items, AssistantPage
+  - **scale-105** (5% زوم) للصور الكبيرة: SongCard (default variant), HomePage hero, SongDetailPage, FullPlayer large cover
+- للحفاظ على التأثير الحركي عند الـ hover، أبقيت `group-hover:scale-110` على SongCard الكبيرة فوق الزوم الافتراضي (scale-105)
+- لـ FullPlayer الكبير: غيّرت المنطق من `isPlaying ? scale-105 : scale-100` إلى `scale-105` دائماً + `scale-110` عند التشغيل (zoom إضافي كتأثير حركي)
+- أضفت `transition-transform duration-500` على كل الصور المعدّلة للحركة السلسة
+- شغّلت lint: لا أخطاء (تحذير مسبق في SplashScreen فقط)
+- اختبرت بـ Agent Browser (iPhone 14 viewport):
+  - حلّلت لقطة شاشة للصفحة الرئيسية بـ VLM:
+    - "الصور ممتلئة بالكامل بدون خلفية سوداء" ✅
+    - "الصور مكبّرة قليلاً (zoomed in)" ✅
+    - "رأس المغني وقسم من الجيتار في أعلى الصورة قد تم قصهما قليلاً، مما يشير إلى أن الصورة أكبر من إطار العرض وقد تم تكبيرها لملء المساحة" ✅
+  - حلّلت لقطة شاشة لصفحة تفاصيل الأغنية:
+    - "الصورة تملأ عرض الحاوية بالكامل" ✅
+    - "لا يوجد إطار أسود حول الصورة داخل الحاوية" ✅
+    - "الصورة مكبرة أو مقصوصة (Cropped)" ✅
+
+Stage Summary:
+- كل صور أغلفة الأغاني (8 مواقع في التطبيق) الآن عليها زوم خفيف (5-10%)
+- لن تظهر خلفية سوداء داخل أي حاوية صورة غلاف أغنية بعد الآن
+- الزوم صُمّم ليكون متدرّجاً: 5% للصور الكبيرة، 10% للصور الصغيرة (لأن الزوم يكون أكثر وضوحاً على الصور الصغيرة)
+- الحاويات لديها `overflow-hidden` فلن يفيض الزوم خارج الإطار
+- الحركة السلسة مضمونة عبر `transition-transform duration-500` على كل الصور
+
+الملفات المعدّلة:
+- src/components/naghma/cards/SongCard.tsx (سطران)
+- src/components/naghma/layout/MiniPlayer.tsx
+- src/components/naghma/player/FullPlayer.tsx (سطران)
+- src/components/naghma/home/HomePage.tsx
+- src/components/naghma/pages/SongDetailPage.tsx
+- src/components/naghma/assistant/AssistantPage.tsx

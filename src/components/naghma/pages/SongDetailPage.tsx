@@ -36,7 +36,7 @@ export function SongDetailPage() {
       <button onClick={back} className="mb-3 flex items-center gap-1 text-xs text-muted-foreground"><ChevronRight className="h-4 w-4 rotate-180" />رجوع</button>
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
         <div className="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-3xl ambient-glow">
-          {song.coverUrl ? <Image src={song.coverUrl} alt={song.title} fill sizes="320px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Music2 className="h-16 w-16 text-white" /></div>}
+          {song.coverUrl ? <Image src={song.coverUrl} alt={song.title} fill sizes="320px" className="object-cover scale-105 transition-transform duration-500" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Music2 className="h-16 w-16 text-white" /></div>}
         </div>
         <div className="mt-4 text-center"><h1 className="text-2xl font-extrabold">{song.title}</h1>{song.artistName && <button onClick={() => song.artistId && navigate('artist', { artistId: song.artistId })} className="text-sm text-primary hover:underline" disabled={!song.artistId}>{song.artistName}</button>}</div>
         <div className="mt-4 flex items-center justify-center gap-3">

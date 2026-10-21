@@ -43,7 +43,7 @@ export function MiniPlayer() {
           ) : (
             <div className="flex items-center gap-2.5 p-2">
               <button onClick={() => setFullPlayer(true)} className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-800 tap-scale" aria-label="فتح المشغل الكامل">
-                {track.coverUrl ? <Image src={track.coverUrl} alt={track.title} fill sizes="48px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Play className="h-5 w-5 text-white" fill="currentColor" /></div>}
+                {track.coverUrl ? <Image src={track.coverUrl} alt={track.title} fill sizes="48px" className="object-cover scale-110 transition-transform duration-500" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Play className="h-5 w-5 text-white" fill="currentColor" /></div>}
                 {isLoading && <div className="absolute inset-0 flex items-center justify-center bg-black/50"><div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /></div>}
               </button>
               <button onClick={() => setFullPlayer(true)} className="min-w-0 flex-1 text-right"><p className="truncate text-xs font-semibold leading-tight text-white">{track.title}</p><p className="truncate text-[10px] bw-muted">{track.artistName || 'فنان غير معروف'}</p></button>

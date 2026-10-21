@@ -85,7 +85,7 @@ export function HomePage() {
           {hero && (
             <motion.div key={hero.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="relative overflow-hidden rounded-3xl border border-border/30">
               <div className="relative h-52 sm:h-60">
-                <Image src={hero.coverUrl || '/icon.jpg'} alt={hero.title} fill sizes="(max-width:640px) 100vw, 600px" className="object-cover" unoptimized priority loading="eager" />
+                <Image src={hero.coverUrl || '/icon.jpg'} alt={hero.title} fill sizes="(max-width:640px) 100vw, 600px" className="object-cover scale-105 transition-transform duration-1000" unoptimized priority loading="eager" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
                 <div className="absolute -bottom-10 left-1/2 h-32 w-3/4 -translate-x-1/2 rounded-full bg-primary/40 blur-3xl" />
                 <div className="absolute inset-0 flex flex-col justify-between p-4">
