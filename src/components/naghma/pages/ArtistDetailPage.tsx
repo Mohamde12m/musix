@@ -26,7 +26,7 @@ export function ArtistDetailPage() {
         <div className="absolute inset-0">{artist.image && <Image src={artist.image} alt={artist.name} fill sizes="100vw" className="object-cover opacity-20 blur-xl" unoptimized />}</div>
         <div className="relative flex flex-col items-center gap-3 text-center">
           <div className="relative h-28 w-28 overflow-hidden rounded-full ring-4 ring-primary/30 pulse-glow">
-            <Image src={artist.image || '/artists/default.png'} alt={artist.name} fill sizes="112px" className="object-cover" unoptimized />
+            <Image src={artist.image || '/artists/default.png'} alt={artist.name} fill sizes="112px" className="object-cover scale-110 transition-transform duration-500" unoptimized />
           </div>
           <div><h1 className="text-2xl font-extrabold">{artist.name}</h1>{artist.country && <p className="text-xs text-muted-foreground">{artist.country}</p>}<p className="mt-1 text-xs text-muted-foreground">{artist.songCount} أغنية منشورة</p></div>
           {artist.bio && <p className="max-w-md text-xs leading-relaxed text-muted-foreground">{artist.bio}</p>}
@@ -37,7 +37,7 @@ export function ArtistDetailPage() {
         <>
           <h3 className="mb-2 text-sm font-semibold">الأغاني</h3>
           <div className="space-y-1">{songs.map((s) => <SongCard key={s.id} song={s} queue={songs} variant="list" />)}</div>
-          {albums.length > 0 && <div className="mt-6"><h3 className="mb-2 text-sm font-semibold">الألبومات ({albums.length})</h3><div className="grid grid-cols-2 gap-2">{albums.map((a) => <div key={a.id} className="rounded-2xl bg-card/40 p-2"><div className="relative aspect-square overflow-hidden rounded-xl bg-muted">{a.coverUrl ? <Image src={a.coverUrl} alt={a.title} fill sizes="150px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Music2 className="h-8 w-8 text-white" /></div>}</div><p className="mt-1.5 truncate text-xs font-semibold">{a.title}</p><p className="text-[10px] text-muted-foreground">{a.songCount} أغنية</p></div>)}</div></div>}
+          {albums.length > 0 && <div className="mt-6"><h3 className="mb-2 text-sm font-semibold">الألبومات ({albums.length})</h3><div className="grid grid-cols-2 gap-2">{albums.map((a) => <div key={a.id} className="rounded-2xl bg-card/40 p-2"><div className="relative aspect-square overflow-hidden rounded-xl bg-muted">{a.coverUrl ? <Image src={a.coverUrl} alt={a.title} fill sizes="150px" className="object-cover scale-110 transition-transform duration-500" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Music2 className="h-8 w-8 text-white" /></div>}</div><p className="mt-1.5 truncate text-xs font-semibold">{a.title}</p><p className="text-[10px] text-muted-foreground">{a.songCount} أغنية</p></div>)}</div></div>}
         </>
       )}
     </div>

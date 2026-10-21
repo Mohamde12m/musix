@@ -9,7 +9,7 @@ export function CategoryCard({ category }: { category: ApiCategory }) {
   return (
     <button onClick={() => navigate('category', { categoryId: category.id })} className="group relative h-24 w-40 shrink-0 overflow-hidden rounded-2xl text-right tap-scale ring-1 ring-border/30">
       {category.image ? (
-        <Image src={category.image} alt={category.name} fill sizes="160px" className="object-cover transition-transform duration-500 group-hover:scale-110" unoptimized />
+        <Image src={category.image} alt={category.name} fill sizes="160px" className="object-cover scale-110 transition-transform duration-500 group-hover:scale-125" unoptimized />
       ) : <div className="absolute inset-0 gradient-purple" />}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
       <div className="relative flex h-full w-full flex-col justify-end p-3">

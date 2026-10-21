@@ -23,7 +23,7 @@ export function CategoryDetailPage() {
     <div className="px-3 pb-40 pt-[calc(env(safe-area-inset-top)+12px)]">
       <button onClick={back} className="mb-3 flex items-center gap-1 text-xs text-muted-foreground"><ChevronRight className="h-4 w-4 rotate-180" />رجوع</button>
       <div className="relative mb-4 overflow-hidden rounded-3xl p-6 text-center">
-        {category.image ? <Image src={category.image} alt={category.name} fill sizes="(max-width:640px) 100vw, 600px" className="object-cover" unoptimized priority /> : <div className="absolute inset-0 gradient-purple" />}
+        {category.image ? <Image src={category.image} alt={category.name} fill sizes="(max-width:640px) 100vw, 600px" className="object-cover scale-110 transition-transform duration-500" unoptimized priority /> : <div className="absolute inset-0 gradient-purple" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30" />
         <div className="relative"><h1 className="text-2xl font-extrabold text-white drop-shadow-lg">{category.name}</h1>{category.description && <p className="mt-1 text-xs text-white/90 drop-shadow">{category.description}</p>}<p className="mt-2 text-xs text-white/80 drop-shadow">{category.songCount} أغنية</p></div>
       </div>

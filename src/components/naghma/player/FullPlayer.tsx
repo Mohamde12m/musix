@@ -67,7 +67,7 @@ export function FullPlayer() {
                     <div key={t.id + i} className={`group flex items-center gap-2 rounded-xl p-2 transition-colors ${i === currentIndex ? 'bg-primary/15' : 'hover:bg-accent/40'}`}>
                       <button onClick={() => { usePlayerStore.getState().playQueue(queue, i); setShowQueue(false) }} className="flex min-w-0 flex-1 items-center gap-2 text-right">
                         <span className="w-5 text-center text-xs text-muted-foreground">{i + 1}</span>
-                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">{t.coverUrl ? <Image src={t.coverUrl} alt="" fill sizes="40px" className="object-cover scale-110 transition-transform duration-500" unoptimized /> : null}</div>
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-muted">{t.coverUrl ? <Image src={t.coverUrl} alt="" fill sizes="40px" className="object-cover scale-125 transition-transform duration-500" unoptimized /> : null}</div>
                         <div className="min-w-0 flex-1"><p className={`truncate text-xs font-semibold ${i === currentIndex ? 'text-primary' : ''}`}>{t.title}</p><p className="truncate text-[10px] text-muted-foreground">{t.artistName}</p></div>
                       </button>
                       <button onClick={() => removeFromQueue(i)} className="rounded-full p-1.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive" aria-label="حذف"><span className="text-lg leading-none">×</span></button>
@@ -86,7 +86,7 @@ export function FullPlayer() {
           <div className="flex h-[calc(100%-60px)] flex-col px-4 pb-[calc(env(safe-area-inset-bottom)+12px)]">
             <div className="relative flex-1 flex items-center justify-center">
               <div className="relative aspect-square w-full max-w-[min(80vw,360px)] overflow-hidden rounded-3xl ambient-glow pulse-glow">
-                {track.coverUrl ? <Image src={track.coverUrl} alt={track.title} fill sizes="360px" className={`object-cover scale-105 transition-transform duration-1000 ${isPlaying ? 'scale-110' : 'scale-105'}`} unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Play className="h-20 w-20 text-white" fill="currentColor" /></div>}
+                {track.coverUrl ? <Image src={track.coverUrl} alt={track.title} fill sizes="360px" className={`object-cover scale-110 transition-transform duration-1000 ${isPlaying ? 'scale-125' : 'scale-110'}`} unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Play className="h-20 w-20 text-white" fill="currentColor" /></div>}
                 {isPlaying && <div className="absolute inset-0 flex items-end justify-center gap-1 bg-gradient-to-t from-black/40 to-transparent p-6"><div className="flex items-end gap-1 h-12">{Array.from({ length: 24 }).map((_, i) => <span key={i} className="w-1 rounded-full bg-white/80 wave-bar" style={{ animationDelay: `${i * 60}ms`, height: `${30 + Math.sin(i) * 30 + 30}%` }} />)}</div></div>}
               </div>
             </div>

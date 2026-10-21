@@ -169,3 +169,48 @@ Stage Summary:
 - src/components/naghma/home/HomePage.tsx
 - src/components/naghma/pages/SongDetailPage.tsx
 - src/components/naghma/assistant/AssistantPage.tsx
+
+---
+Task ID: 5
+Agent: Z.ai Code (main)
+Task: زيادة الزوم على جميع البطاقات (الأغاني + التصنيفات + الفنانون + الألبومات) لتعبئة البطاقة بالكامل بدون أي خلفية سوداء.
+
+Work Log:
+- قرأت العمل السابق في worklog.md
+- لاحظت أن الزوم السابق (5-10%) لم يكن كافياً لبعض البطاقات، فرفعت القيم
+- حدّثت جميع البطاقات بمستويات زوم متدرّجة:
+  - **scale-125** (25%) للصور الصغيرة (≤56px): SongCard list, MiniPlayer, FullPlayer queue, AssistantPage
+  - **scale-110** دائماً + **group-hover:scale-125** عند الـ hover للبطاقات الكبيرة: SongCard default, CategoryCard, ArtistCard, DiscoverPage categories
+  - **scale-110** للبانرات والصور الكبيرة: HomePage hero, SongDetailPage, FullPlayer large cover (with scale-125 when playing), CategoryDetailPage banner, ArtistDetailPage artist image & album covers
+- شغّلت lint: لا أخطاء (تحذير مسبق في SplashScreen فقط)
+- اختبرت بـ Agent Browser (iPhone 14 viewport):
+  - فحصت الـ computed style لصورة مصغّرة من يوتيوب (mqdefault.jpg):
+    - className: `object-cover scale-110 transition-transform duration-500 group-hover:scale-125`
+    - --tw-scale-x: 110% ✅
+    - scale: 1.1 ✅ (Tailwind v4 يستخدم خاصية `scale` الجديدة من CSS Transform Module Level 2)
+    - objectFit: cover ✅
+  - فحصت الـ bounding box للصورة:
+    - الصورة: x=-630, w=176 (أعرض من البطاقة بـ 16px)
+    - البطاقة: x=-622, w=160
+    - imgCoversParent: true ✅ — الصورة تغطّي البطاقة بالكامل
+  - حلّلت لقطة شاشة بـ VLM للصفحة الرئيسية:
+    - "جميع البطاقات الثلاث (مربعة أو مستطيلة) تحتوي على صور تملأ مساحتها بالكامل، ولا يوجد أي فراغ أسود حول الصور داخل حدود البطاقات" ✅
+
+Stage Summary:
+- جميع البطاقات الآن عليها زوم كافٍ لتعبئتها بالكامل (10-25% حسب حجم الصورة)
+- الزوم مطبّق على: SongCard (list + default), CategoryCard, ArtistCard, DiscoverPage categories, ArtistDetailPage (artist + albums), MiniPlayer, FullPlayer (large + queue), HomePage hero, SongDetailPage, CategoryDetailPage, AssistantPage
+- تقنياً، استخدمت Tailwind v4 utilities (`scale-110`, `scale-125`, `group-hover:scale-125`) التي تستخدم خاصية `scale` الجديدة (CSS Transform Module Level 2) بدلاً من `transform: scale()` القديم
+- الحاوية الأصلية لديها `overflow-hidden` لقطع الفيض
+
+الملفات المعدّلة (11 ملف):
+1. src/components/naghma/cards/SongCard.tsx (list + default)
+2. src/components/naghma/cards/CategoryCard.tsx
+3. src/components/naghma/cards/ArtistCard.tsx
+4. src/components/naghma/pages/ArtistDetailPage.tsx (artist + album covers)
+5. src/components/naghma/pages/DiscoverPage.tsx (categories)
+6. src/components/naghma/pages/CategoryDetailPage.tsx (banner)
+7. src/components/naghma/pages/SongDetailPage.tsx
+8. src/components/naghma/layout/MiniPlayer.tsx
+9. src/components/naghma/player/FullPlayer.tsx (large cover + queue items)
+10. src/components/naghma/home/HomePage.tsx (hero banner)
+11. src/components/naghma/assistant/AssistantPage.tsx
