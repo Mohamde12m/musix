@@ -32,7 +32,7 @@ export function MiniPlayer() {
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="fixed inset-x-0 z-30 px-2" style={{ bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))' }}>
       <div className="mx-auto max-w-md">
-        <div className="bw-glass-strong overflow-hidden rounded-2xl shadow-xl">
+        <div className="bw-opaque overflow-hidden rounded-2xl shadow-xl">
           <div className="h-0.5 w-full bw-divider"><div className="h-full gradient-purple transition-[width] duration-200" style={{ width: `${progress}%` }} /></div>
           {error ? (
             <div className="flex items-center gap-2 p-3">

@@ -169,9 +169,22 @@ body {
   color: oklch(0.97 0 0);
   box-shadow: 0 -8px 30px oklch(0 0 0 / 0.6);
 }
+/* خلفية صلبة غير شفافة تماماً (للمشغل) */
+.bw-opaque {
+  background: oklch(0.04 0 0);
+  border: 1px solid oklch(0.28 0 0);
+  color: oklch(0.97 0 0);
+  box-shadow: 0 -8px 30px oklch(0 0 0 / 0.6);
+}
 .bw-divider { background: oklch(0.3 0 0 / 0.4); }
 .bw-muted { color: oklch(0.55 0 0); }
 .bw-accent-dot { background: oklch(0.65 0.28 295); }
+/* مؤشرات منزلقة بحافة بلون مختلف عن اللون الداخلي */
+.bw-accent-bordered {
+  background: oklch(0.65 0.28 295);
+  border: 1.5px solid oklch(0.97 0 0);
+  box-shadow: 0 0 0 1px oklch(0.65 0.28 295 / 0.4), 0 1px 4px oklch(0 0 0 / 0.5);
+}
 
 .gradient-purple-text {
   background: linear-gradient(135deg, oklch(0.8 0.25 295), oklch(0.75 0.28 320));

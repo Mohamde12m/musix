@@ -27,7 +27,7 @@ export function BottomNav() {
               <button key={item.id} onClick={() => navigate(item.id)} className="relative flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 tap-scale" aria-label={item.label} aria-current={active ? 'page' : undefined}>
                 <span className={cn('flex h-8 w-12 items-center justify-center rounded-full transition-all', active ? 'text-white' : 'bw-muted')}>
                   <Icon className="h-[1.15rem] w-[1.15rem]" />
-                  {active && <motion.span layoutId="nav-active-dot" className="absolute -bottom-0.5 h-1 w-6 rounded-full bw-accent-dot" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
+                  {active && <motion.span layoutId="nav-active-dot" className="absolute -bottom-0.5 h-1 w-6 rounded-full bw-accent-bordered" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
                 </span>
                 <span className={cn('text-[10px] font-medium leading-none', active ? 'text-white' : 'bw-muted')}>{item.label}</span>
               </button>
