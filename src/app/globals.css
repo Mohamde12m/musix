@@ -152,6 +152,27 @@ body {
 
 .gradient-purple { background: linear-gradient(135deg, oklch(0.7 0.3 295), oklch(0.6 0.28 310), oklch(0.55 0.25 330)); }
 
+/* ===== لوحة أبيض وأسود للثالث السفلي (المشغل + شريط التنقل) ===== */
+/* يتماشى مع لون الخلفية الداكنة مع لمسات بنفسجية للهوية */
+.bw-glass {
+  background: oklch(0.05 0 0 / 0.92);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid oklch(0.22 0 0 / 0.6);
+  color: oklch(0.97 0 0);
+}
+.bw-glass-strong {
+  background: oklch(0.04 0 0 / 0.96);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid oklch(0.25 0 0 / 0.7);
+  color: oklch(0.97 0 0);
+  box-shadow: 0 -8px 30px oklch(0 0 0 / 0.6);
+}
+.bw-divider { background: oklch(0.3 0 0 / 0.4); }
+.bw-muted { color: oklch(0.55 0 0); }
+.bw-accent-dot { background: oklch(0.65 0.28 295); }
+
 .gradient-purple-text {
   background: linear-gradient(135deg, oklch(0.8 0.25 295), oklch(0.75 0.28 320));
   -webkit-background-clip: text;

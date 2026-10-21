@@ -54,3 +54,45 @@ Stage Summary:
 - The main page (`src/app/page.tsx`) composes `AudioEngine` + `PageRouter` (which renders `HomePage` and other screens via `src/components/naghma/layout/PageRouter.tsx`) + `MiniPlayer` + `BottomNav` + `FullPlayer` + `AssistantFloatingButton`; there are no ad slots at any position.
 - The only "banner-like" elements are two first-party promo cards in `src/components/naghma/home/HomePage.tsx` (a rewards CTA and an assistant CTA) — neither is a third-party ad.
 - To add ads, the next agent should create a dedicated component (e.g. `src/components/naghma/ads/AdBanner.tsx`, `AdsterraNative.tsx`, `RewardedAdModal.tsx`), load the network script in `src/app/layout.tsx` (or via `next/script`), and insert slots into `AppContent()` (sticky banner above `BottomNav`) and `HomePage.tsx` (in-feed between sections). No existing code needs to be removed — only added.
+
+---
+Task ID: 2
+Agent: Z.ai Code (main)
+Task: تغيير الثالث السفلي من الشاشة (المشغل + شريط التنقل) إلى ألوان أبيض وأسود مع لمسات بنفسجية، وإضافة فجوة صغيرة بين المشغل المصغر وشريط التنقل، مع التركيز على وضع الهاتف العمودي.
+
+Work Log:
+- قرأت ملفات العمل السابقة في worklog.md
+- فحصت الهيكل الحالي للمشغل و شريط التنقل في `src/components/naghma/layout/MiniPlayer.tsx` و `BottomNav.tsx`
+- راجعت `src/app/page.tsx` لفهم ترتيب العناصر في الصفحة الرئيسية
+- أضفت 5 فئات CSS جديدة في `src/app/globals.css` تحت قسم "لوحة أبيض وأسود للثالث السفلي":
+  - `.bw-glass` (أسود شفاف + blur)
+  - `.bw-glass-strong` (أسود داكن جداً + blur + box-shadow)
+  - `.bw-divider` (رمادي للفواصل)
+  - `.bw-muted` (رمادي فاتح للنصوص الثانوية)
+  - `.bw-accent-dot` (نفسجي مطابق للون الرئيسي للنقطة النشطة)
+- حدّثت `MiniPlayer.tsx`:
+  - استبدلت `glass-strong` بـ `bw-glass-strong`
+  - استبدلت `border-border/40` بلا حدود بنفسجي، استخدمت رمادي محايد `border-neutral-700/60`
+  - غيرت النص من `text-muted-foreground` إلى `bw-muted`، والنص الرئيسي إلى `text-white`
+  - أضفت فجوة 8px باستخدام `style={{ bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))' }}` بدلاً من `bottom-[64px]` — الآن يفصل بين المشغل و الشريط مسافة 8px + دعم المنطقة الآمنة
+  - أزلت `safe-bottom` عن المشغل لأن المعادلة الآن تعالج المنطقة الآمنة تلقائياً
+  - حافظت على `gradient-purple` لزر التشغيل وشريط التقدم للحفاظ على هوية التطبيق
+- حدّثت `BottomNav.tsx`:
+  - استبدلت `glass-strong` بـ `bw-glass-strong`
+  - استبدلت الحدود `border-border/40` بـ `border-neutral-700/60`
+  - غيرت الأيقونات من `text-muted-foreground` إلى `bw-muted` والعنصر النشط من `text-primary`/`bg-primary/15` إلى `text-white` مع `bw-accent-dot` (نفسجي مطابق)
+- شغّلت lint: لا أخطاء، فقط تحذير مسبق في SplashScreen غير مرتبط
+- اختبرت النتيجة بـ Agent Browser مع محاكاة iPhone 14 (وضع الهاتف العمودي):
+  - دخلت كأدمن
+  - نشّطت أغنية "TGV" للتشغيل
+  - أخذت لقطة شاشة و حلّلتها بـ VLM:
+    - شريط التنقل السفلي: أسود ✅
+    - المشغل المصغر: رمادي داكن (كربوني) ✅
+    - توجد فجوة واضحة بين المشغل وشريط التنقل ✅
+    - أيقونات شريط التنقل: بيضاء ✅
+
+Stage Summary:
+- الثالث السفلي الآن بِأبيض وأسود (grayscale) مع لمسات بنفسجية بسيطة (شريط التقدم، زر التشغيل، النقطة النشطة في الشريط) — يتماشى مع الألوان الرئيسية
+- فجوة 8px ظاهرة بين المشغل المصغر وشريط التنقل، مع دعم المنطقة الآمنة على أجهزة iPhone
+- التصميم مهيأ لوضع الهاتف العمودي (max-w-md يحصر العرض، calc مع safe-area-inset-bottom)
+- الفئات الجديدة يمكن إعادة استخدامها لاحقاً في مكونات أخرى إذا لزم

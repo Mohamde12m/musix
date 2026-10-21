@@ -18,18 +18,18 @@ export function BottomNav() {
   const navigate = useNavStore((s) => s.navigate)
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 safe-bottom" aria-label="التنقل الرئيسي">
-      <div className="glass-strong border-t border-border/40 px-1.5 py-1.5">
+      <div className="bw-glass-strong border-t border-neutral-700/60 px-1.5 py-1.5">
         <div className="mx-auto flex max-w-md items-stretch justify-between">
           {items.map((item) => {
             const active = page === item.id
             const Icon = item.icon
             return (
               <button key={item.id} onClick={() => navigate(item.id)} className="relative flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 tap-scale" aria-label={item.label} aria-current={active ? 'page' : undefined}>
-                <span className={cn('flex h-8 w-12 items-center justify-center rounded-full transition-all', active ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground')}>
+                <span className={cn('flex h-8 w-12 items-center justify-center rounded-full transition-all', active ? 'text-white' : 'bw-muted')}>
                   <Icon className="h-[1.15rem] w-[1.15rem]" />
-                  {active && <motion.span layoutId="nav-active-dot" className="absolute -bottom-0.5 h-1 w-6 rounded-full bg-primary" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
+                  {active && <motion.span layoutId="nav-active-dot" className="absolute -bottom-0.5 h-1 w-6 rounded-full bw-accent-dot" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
                 </span>
-                <span className={cn('text-[10px] font-medium leading-none', active ? 'text-primary' : 'text-muted-foreground')}>{item.label}</span>
+                <span className={cn('text-[10px] font-medium leading-none', active ? 'text-white' : 'bw-muted')}>{item.label}</span>
               </button>
             )
           })}

@@ -30,30 +30,30 @@ export function MiniPlayer() {
   const isFav = favIds.includes(track.id)
 
   return (
-    <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="fixed bottom-[64px] inset-x-0 z-30 px-2 safe-bottom">
+    <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="fixed inset-x-0 z-30 px-2" style={{ bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))' }}>
       <div className="mx-auto max-w-md">
-        <div className="glass-strong overflow-hidden rounded-2xl border border-border/40 shadow-xl">
-          <div className="h-0.5 w-full bg-muted/50"><div className="h-full gradient-purple transition-[width] duration-200" style={{ width: `${progress}%` }} /></div>
+        <div className="bw-glass-strong overflow-hidden rounded-2xl shadow-xl">
+          <div className="h-0.5 w-full bw-divider"><div className="h-full gradient-purple transition-[width] duration-200" style={{ width: `${progress}%` }} /></div>
           {error ? (
             <div className="flex items-center gap-2 p-3">
-              <AlertCircle className="h-5 w-5 shrink-0 text-destructive" />
-              <p className="flex-1 truncate text-xs text-destructive">{error}</p>
-              <button onClick={() => { usePlayerStore.getState().setError(null); usePlayerStore.getState().play() }} className="rounded-full bg-primary/15 p-2 text-primary tap-scale" aria-label="إعادة المحاولة"><RotateCw className="h-4 w-4" /></button>
+              <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+              <p className="flex-1 truncate text-xs text-red-500">{error}</p>
+              <button onClick={() => { usePlayerStore.getState().setError(null); usePlayerStore.getState().play() }} className="rounded-full p-2 text-white tap-scale" style={{ background: 'oklch(0.65 0.28 295)' }} aria-label="إعادة المحاولة"><RotateCw className="h-4 w-4" /></button>
             </div>
           ) : (
             <div className="flex items-center gap-2.5 p-2">
-              <button onClick={() => setFullPlayer(true)} className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted tap-scale" aria-label="فتح المشغل الكامل">
+              <button onClick={() => setFullPlayer(true)} className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-neutral-800 tap-scale" aria-label="فتح المشغل الكامل">
                 {track.coverUrl ? <Image src={track.coverUrl} alt={track.title} fill sizes="48px" className="object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center gradient-purple"><Play className="h-5 w-5 text-white" fill="currentColor" /></div>}
                 {isLoading && <div className="absolute inset-0 flex items-center justify-center bg-black/50"><div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /></div>}
               </button>
-              <button onClick={() => setFullPlayer(true)} className="min-w-0 flex-1 text-right"><p className="truncate text-xs font-semibold leading-tight">{track.title}</p><p className="truncate text-[10px] text-muted-foreground">{track.artistName || 'فنان غير معروف'}</p></button>
+              <button onClick={() => setFullPlayer(true)} className="min-w-0 flex-1 text-right"><p className="truncate text-xs font-semibold leading-tight text-white">{track.title}</p><p className="truncate text-[10px] bw-muted">{track.artistName || 'فنان غير معروف'}</p></button>
               {isPlaying && !isLoading && <div className="flex items-end gap-0.5 h-4">{[0,150,300,450].map((d) => <span key={d} className="w-0.5 h-full gradient-purple wave-bar" style={{ animationDelay: `${d}ms` }} />)}</div>}
               <div className="flex items-center gap-1">
-                <button onClick={() => toggleFav(track.id)} className={`rounded-full p-2 tap-scale ${isFav ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'}`} aria-label="مفضلة"><Heart className="h-4 w-4" fill={isFav ? 'currentColor' : 'none'} /></button>
+                <button onClick={() => toggleFav(track.id)} className={`rounded-full p-2 tap-scale ${isFav ? 'text-red-500' : 'bw-muted hover:text-white'}`} aria-label="مفضلة"><Heart className="h-4 w-4" fill={isFav ? 'currentColor' : 'none'} /></button>
                 <button onClick={() => togglePlay()} className="flex h-9 w-9 items-center justify-center rounded-full gradient-purple text-white shadow-lg tap-scale" aria-label={isPlaying ? 'إيقاف' : 'تشغيل'}>
                   {isLoading ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : isPlaying ? <Pause className="h-4 w-4" fill="currentColor" /> : <Play className="h-4 w-4 mr-0.5" fill="currentColor" />}
                 </button>
-                <button onClick={() => next(false)} className="rounded-full p-2 text-foreground/80 tap-scale hover:bg-accent" aria-label="التالية"><SkipForward className="h-4 w-4" fill="currentColor" /></button>
+                <button onClick={() => next(false)} className="rounded-full p-2 text-white/70 tap-scale hover:bg-white/10" aria-label="التالية"><SkipForward className="h-4 w-4" fill="currentColor" /></button>
               </div>
             </div>
           )}
