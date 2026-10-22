@@ -7,6 +7,9 @@ import { FavoritesPage } from '@/components/naghma/pages/FavoritesPage'
 import { LibraryPage } from '@/components/naghma/pages/LibraryPage'
 import { ProfilePage } from '@/components/naghma/pages/ProfilePage'
 import { SettingsPage } from '@/components/naghma/pages/SettingsPage'
+import { AboutPage } from '@/components/naghma/pages/AboutPage'
+import { ContactPage } from '@/components/naghma/pages/ContactPage'
+import { NewsPage } from '@/components/naghma/pages/NewsPage'
 import { SongDetailPage } from '@/components/naghma/pages/SongDetailPage'
 import { ArtistDetailPage } from '@/components/naghma/pages/ArtistDetailPage'
 import { CategoryDetailPage } from '@/components/naghma/pages/CategoryDetailPage'
@@ -38,6 +41,9 @@ function renderPage(page: PageId) {
     case 'library': return <LibraryPage />
     case 'profile': return <ProfilePage />
     case 'settings': return <SettingsPage />
+    case 'about': return <AboutPage />
+    case 'contact': return <ContactPage />
+    case 'news': return <NewsPage />
     case 'song': return <SongDetailPage />
     case 'artist': return <ArtistDetailPage />
     case 'category': return <CategoryDetailPage />

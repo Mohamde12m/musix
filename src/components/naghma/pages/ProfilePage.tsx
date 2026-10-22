@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes'
 import { Switch } from '@/components/ui/switch'
 import { adminCheck, adminLogout, fetchSocialLinks, type SocialLinks } from '@/lib/api-client'
 import { toast } from 'sonner'
-import { Wallet, Music2, TrendingUp, LogOut, User, Settings, Heart, ListMusic, ChevronLeft, Moon, Shield, Facebook, Instagram, Mail, MessageCircle } from 'lucide-react'
+import { Wallet, Music2, TrendingUp, LogOut, User, Settings, Heart, ListMusic, ChevronLeft, Moon, Shield, Facebook, Instagram, Mail, MessageCircle, Info, Newspaper, Phone } from 'lucide-react'
 import { RewardedVideoAd } from '@/components/naghma/common/RewardedVideoAd'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -198,6 +198,11 @@ export function ProfilePage() {
           { icon: Heart, label: 'المفضلة', onClick: () => navigate('favorites') },
           { icon: ListMusic, label: 'مكتبتي', onClick: () => navigate('library') },
           { icon: Settings, label: 'الإعدادات', onClick: () => navigate('settings') },
+        ]} />
+        <Section title="عن التطبيق" items={[
+          { icon: Info, label: 'من نحن', onClick: () => navigate('about') },
+          { icon: Phone, label: 'اتصل بنا', onClick: () => navigate('contact') },
+          { icon: Newspaper, label: 'أخبار وتحديثات', onClick: () => navigate('news') },
         ]} />
         <Section title="التفضيلات">
           <Row icon={theme === 'dark' ? Moon : User} label="الوضع الداكن"><Switch checked={theme === 'dark'} onCheckedChange={(c) => setTheme(c ? 'dark' : 'light')} /></Row>

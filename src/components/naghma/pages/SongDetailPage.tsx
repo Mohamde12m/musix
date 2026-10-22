@@ -12,6 +12,51 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 
+// توليد JSON-LD للأغنية — يساعد Google على فهرستها بشكل احترافي
+function SongJsonLd({ song }: { song: any }) {
+  const jsonLd: any = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicRecording',
+    name: song.title,
+    url: `https://musix-livid.vercel.app/?song=${song.id}`,
+    audio: {
+      '@type': 'AudioObject',
+      contentUrl: song.audioUrl,
+    },
+  }
+  if (song.artistName) {
+    jsonLd.byArtist = {
+      '@type': 'MusicGroup',
+      name: song.artistName,
+    }
+  }
+  if (song.duration) {
+    jsonLd.duration = `PT${Math.floor(song.duration / 60)}M${song.duration % 60}S`
+  }
+  if (song.coverUrl) {
+    jsonLd.image = song.coverUrl
+  }
+  if (song.categoryName) {
+    jsonLd.inAlbum = {
+      '@type': 'MusicAlbum',
+      name: song.categoryName,
+    }
+  }
+  if (song.playCount) {
+    jsonLd.interactionStatistic = {
+      '@type': 'InteractionCounter',
+      interactionType: 'https://schema.org/PlayAction',
+      userInteractionCount: song.playCount,
+    }
+  }
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}
+
 export function SongDetailPage() {
   const songId = useNavStore((s) => s.params.songId)
   const navigate = useNavStore((s) => s.navigate)
@@ -33,6 +78,7 @@ export function SongDetailPage() {
   }
   return (
     <div className="px-3 pb-40 pt-[calc(env(safe-area-inset-top)+12px)]">
+      <SongJsonLd song={song} />
       <button onClick={back} className="mb-3 flex items-center gap-1 text-xs text-muted-foreground"><ChevronRight className="h-4 w-4 rotate-180" />رجوع</button>
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
         <div className="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-3xl ambient-glow">
