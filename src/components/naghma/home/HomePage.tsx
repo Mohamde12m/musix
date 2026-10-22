@@ -14,16 +14,15 @@ import { CategoryCard } from '@/components/naghma/cards/CategoryCard'
 import { SectionHeader } from '@/components/naghma/common/SectionHeader'
 import { HScroll } from '@/components/naghma/common/EmptyState'
 import { EmptyState, SkeletonCard } from '@/components/naghma/common/EmptyState'
-import { AdBanner } from '@/components/naghma/common/AdBanner'
-import { UnityBannerAd } from '@/components/naghma/common/UnityAds'
+import { AdBanner, AdSenseBanner } from '@/components/naghma/common/AdBanner'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 
 export function HomePage() {
   const { data, isLoading } = useQuery({ queryKey: ['home'], queryFn: fetchHomeData, staleTime: 60_000 })
-  // جلب إعدادات Unity Ads من API
+  // جلب إعدادات AdSense من API
   const { data: socialLinks } = useQuery({ queryKey: ['social-links'], queryFn: fetchSocialLinks, staleTime: 5 * 60_000 })
-  const unityAdsConfig = socialLinks?.unityAds
+  const adsenseConfig = socialLinks?.adsense
   const navigate = useNavStore((s) => s.navigate)
   const playTrack = usePlayerStore((s) => s.playTrack)
   const toggleFav = useLibraryStore((s) => s.toggleFavorite)
@@ -125,8 +124,8 @@ export function HomePage() {
             </section>
           ))}
 
-          {/* بانر Unity Ads */}
-          {unityAdsConfig && <UnityBannerAd config={unityAdsConfig} />}
+          {/* بانر Google AdSense */}
+          {adsenseConfig?.enabled && <AdSenseBanner slot="home" />}
 
           {data.mostPlayed.length > 0 && (
             <section>

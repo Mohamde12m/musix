@@ -10,7 +10,6 @@ import { adminCheck, adminLogout, fetchSocialLinks, type SocialLinks } from '@/l
 import { toast } from 'sonner'
 import { Wallet, Music2, TrendingUp, LogOut, User, Settings, Heart, ListMusic, ChevronLeft, Moon, Shield, Facebook, Instagram, Mail, MessageCircle } from 'lucide-react'
 import { RewardedVideoAd } from '@/components/naghma/common/RewardedVideoAd'
-import { UnityRewardedAd } from '@/components/naghma/common/UnityAds'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,7 +20,7 @@ const DEFAULT_SOCIAL_LINKS: SocialLinks = {
   facebook: { url: 'https://www.facebook.com/share/19oiL3PSdL/', name: 'فيسبوك', handle: 'MusiX' },
   whatsapp: { url: 'https://wa.me/212713416046', name: 'واتساب', handle: '+212713416046' },
   instagram: { url: 'https://www.instagram.com/el__aouidi_mohamed?obrf=ZzdlY3lqenUzeG44', name: 'انستقرام', handle: 'el__aouidi_mohamed' },
-  unityAds: { gameId: '', bannerPlacementId: 'banner', rewardedPlacementId: 'rewardedVideo', interstitialPlacementId: 'video', enabled: false, scriptUrl: 'https://cdn.unityads.unity3d.com/sdk/unityads-web-1.0.0.min.js' },
+  adsense: { publisherId: '', enabled: false, scriptUrl: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' },
 }
 // =====================================================================================
 
@@ -162,7 +161,6 @@ export function ProfilePage() {
       {isAdmin && (
         <div className="space-y-2">
           <RewardedVideoAd />
-          <UnityRewardedAd config={links.unityAds} />
         </div>
       )}
 

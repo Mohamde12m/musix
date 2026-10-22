@@ -20,14 +20,12 @@ export const DEFAULT_SOCIAL_LINKS = {
   },
 }
 
-// القيم الافتراضية لإعدادات Unity Ads
-export const DEFAULT_UNITY_ADS = {
-  gameId: '',
-  bannerPlacementId: 'banner',
-  rewardedPlacementId: 'rewardedVideo',
-  interstitialPlacementId: 'video',
+// القيم الافتراضية لإعدادات Google AdSense
+export const DEFAULT_ADSENSE = {
+  publisherId: '',                 // مثل: ca-pub-1234567890123456
   enabled: false,
-  scriptUrl: 'https://cdn.unityads.unity3d.com/sdk/unityads-web-1.0.0.min.js',
+  // AdSense script URL الرسمي (يعمل في المتصفحات)
+  scriptUrl: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',
 }
 
 // ذاكرة مؤقتة محلية (تُفرغ عند إعادة تشغيل الخادم)
@@ -65,13 +63,10 @@ export async function GET() {
         name: 'انستقرام',
         handle: map['social_instagram_handle'] || DEFAULT_SOCIAL_LINKS.instagram.handle,
       },
-      unityAds: {
-        gameId: map['unity_game_id'] || DEFAULT_UNITY_ADS.gameId,
-        bannerPlacementId: map['unity_banner_placement'] || DEFAULT_UNITY_ADS.bannerPlacementId,
-        rewardedPlacementId: map['unity_rewarded_placement'] || DEFAULT_UNITY_ADS.rewardedPlacementId,
-        interstitialPlacementId: map['unity_interstitial_placement'] || DEFAULT_UNITY_ADS.interstitialPlacementId,
-        enabled: map['unity_enabled'] === 'true',
-        scriptUrl: map['unity_script_url'] || DEFAULT_UNITY_ADS.scriptUrl,
+      adsense: {
+        publisherId: map['adsense_publisher_id'] || DEFAULT_ADSENSE.publisherId,
+        enabled: map['adsense_enabled'] === 'true',
+        scriptUrl: map['adsense_script_url'] || DEFAULT_ADSENSE.scriptUrl,
       },
     }
     cache = { data, ts: Date.now() }
@@ -80,7 +75,7 @@ export async function GET() {
     // في حالة فشل الاتصال بقاعدة البيانات، أرجع القيم الافتراضية
     return NextResponse.json({
       ...DEFAULT_SOCIAL_LINKS,
-      unityAds: DEFAULT_UNITY_ADS,
+      adsense: DEFAULT_ADSENSE,
     })
   }
 }

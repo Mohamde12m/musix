@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdmin } from '@/lib/auth'
-import { DEFAULT_SOCIAL_LINKS, DEFAULT_UNITY_ADS } from '@/app/api/settings/route'
+import { DEFAULT_SOCIAL_LINKS, DEFAULT_ADSENSE } from '@/app/api/settings/route'
 
 // إعادة ضبط الذاكرة المؤقتة عند التحديث
 async function invalidateCache() {
@@ -16,8 +16,8 @@ export async function GET() {
   if (!(await isAdmin())) return NextResponse.json({ error: 'غير مصرح' }, { status: 401 })
   try {
     const rows = await db.appSetting.findMany({ where: { id: { startsWith: 'social_' } } })
-    const unityRows = await db.appSetting.findMany({ where: { id: { startsWith: 'unity_' } } })
-    const allRows = [...rows, ...unityRows]
+    const adsenseRows = await db.appSetting.findMany({ where: { id: { startsWith: 'adsense_' } } })
+    const allRows = [...rows, ...adsenseRows]
     const map: Record<string, string> = {}
     for (const r of allRows) map[r.id] = r.value
     return NextResponse.json({
@@ -33,13 +33,10 @@ export async function GET() {
         url: map['social_instagram_url'] || DEFAULT_SOCIAL_LINKS.instagram.url,
         handle: map['social_instagram_handle'] || DEFAULT_SOCIAL_LINKS.instagram.handle,
       },
-      unityAds: {
-        gameId: map['unity_game_id'] || DEFAULT_UNITY_ADS.gameId,
-        bannerPlacementId: map['unity_banner_placement'] || DEFAULT_UNITY_ADS.bannerPlacementId,
-        rewardedPlacementId: map['unity_rewarded_placement'] || DEFAULT_UNITY_ADS.rewardedPlacementId,
-        interstitialPlacementId: map['unity_interstitial_placement'] || DEFAULT_UNITY_ADS.interstitialPlacementId,
-        enabled: map['unity_enabled'] === 'true',
-        scriptUrl: map['unity_script_url'] || DEFAULT_UNITY_ADS.scriptUrl,
+      adsense: {
+        publisherId: map['adsense_publisher_id'] || DEFAULT_ADSENSE.publisherId,
+        enabled: map['adsense_enabled'] === 'true',
+        scriptUrl: map['adsense_script_url'] || DEFAULT_ADSENSE.scriptUrl,
       },
     })
   } catch (e: any) {
@@ -52,7 +49,7 @@ export async function PUT(req: NextRequest) {
   let body: any
   try { body = await req.json() } catch { return NextResponse.json({ error: 'طلب غير صالح' }, { status: 400 }) }
 
-  const { facebook, whatsapp, instagram, unityAds } = body
+  const { facebook, whatsapp, instagram, adsense } = body
   const updates: { id: string; value: string }[] = []
   if (facebook?.url?.trim()) updates.push({ id: 'social_facebook_url', value: facebook.url.trim() })
   if (facebook?.handle?.trim()) updates.push({ id: 'social_facebook_handle', value: facebook.handle.trim() })
@@ -61,14 +58,11 @@ export async function PUT(req: NextRequest) {
   if (instagram?.url?.trim()) updates.push({ id: 'social_instagram_url', value: instagram.url.trim() })
   if (instagram?.handle?.trim()) updates.push({ id: 'social_instagram_handle', value: instagram.handle.trim() })
 
-  // إعدادات Unity Ads
-  if (unityAds) {
-    if (typeof unityAds.enabled === 'boolean') updates.push({ id: 'unity_enabled', value: String(unityAds.enabled) })
-    if (unityAds.gameId?.trim() !== undefined) updates.push({ id: 'unity_game_id', value: unityAds.gameId.trim() })
-    if (unityAds.bannerPlacementId?.trim() !== undefined) updates.push({ id: 'unity_banner_placement', value: unityAds.bannerPlacementId.trim() })
-    if (unityAds.rewardedPlacementId?.trim() !== undefined) updates.push({ id: 'unity_rewarded_placement', value: unityAds.rewardedPlacementId.trim() })
-    if (unityAds.interstitialPlacementId?.trim() !== undefined) updates.push({ id: 'unity_interstitial_placement', value: unityAds.interstitialPlacementId.trim() })
-    if (unityAds.scriptUrl?.trim() !== undefined) updates.push({ id: 'unity_script_url', value: unityAds.scriptUrl.trim() })
+  // إعدادات Google AdSense
+  if (adsense) {
+    if (typeof adsense.enabled === 'boolean') updates.push({ id: 'adsense_enabled', value: String(adsense.enabled) })
+    if (adsense.publisherId?.trim() !== undefined) updates.push({ id: 'adsense_publisher_id', value: adsense.publisherId.trim() })
+    if (adsense.scriptUrl?.trim() !== undefined) updates.push({ id: 'adsense_script_url', value: adsense.scriptUrl.trim() })
   }
 
   try {

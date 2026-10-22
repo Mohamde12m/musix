@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { ExternalLink, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
+import { fetchSocialLinks } from '@/lib/api-client'
 
 interface Ad {
   id: string
@@ -11,15 +13,39 @@ interface Ad {
   linkUrl: string
 }
 
-// AdSense Publisher ID
-const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID || ''
-
-// مكوّن إعلان AdSense (بانر)
+// مكوّن إعلان Google AdSense (بانر) — يستخدم Publisher ID من الإعدادات
 export function AdSenseBanner({ slot = 'auto', format = 'auto' }: { slot?: string; format?: string }) {
-  if (!ADSENSE_ID) return null
+  const { data: settings } = useQuery({ queryKey: ['social-links'], queryFn: fetchSocialLinks, staleTime: 5 * 60_000 })
+  const adsense = settings?.adsense
+  const publisherId = adsense?.publisherId || ''
+  const enabled = adsense?.enabled || false
+
+  // تحميل سكربت AdSense عند توفّر Publisher ID
+  useEffect(() => {
+    if (!enabled || !publisherId) return
+    // تحقق إن كان السكربت محمّلاً بالفعل
+    if (document.querySelector(`script[src*="adsbygoogle"]`)) return
+    const script = document.createElement('script')
+    script.async = true
+    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`
+    script.crossOrigin = 'anonymous'
+    document.head.appendChild(script)
+  }, [enabled, publisherId])
+
+  if (!enabled || !publisherId) return null
+
   return (
-    <div className="my-3 overflow-hidden rounded-2xl">
-      <ins className="adsbygoogle" style={{ display: 'block' }} data-ad-client={ADSENSE_ID} data-ad-slot={slot} data-ad-format={format} data-full-width-responsive="true" />
+    <div className="my-3 overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 p-2">
+      <div className="mb-1 flex items-center gap-1.5 px-1">
+        <span className="text-[10px] font-medium text-blue-500">Google Ads</span>
+      </div>
+      <ins className="adsbygoogle"
+        style={{ display: 'block' }}
+        data-ad-client={publisherId}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-full-width-responsive="true"
+      />
     </div>
   )
 }
@@ -27,7 +53,6 @@ export function AdSenseBanner({ slot = 'auto', format = 'auto' }: { slot?: strin
 // مكوّن إعلان Adsterra (Native Banner)
 function AdsterraBanner() {
   useEffect(() => {
-    // تفعيل إعلان Adsterra بعد تحميل الصفحة
     try {
       const script = document.createElement('script')
       script.async = true
@@ -101,14 +126,14 @@ export function SelfAd({ position = 'home' }: { position?: string }) {
 }
 
 // مكوّن شامل: يعرض الإعلانات حسب الأولوية
-// 1) Adsterra (نشط دائمًا) 2) AdSense (إذا توفر) 3) إعلان ذاتي
+// 1) Adsterra (نشط دائمًا) 2) Google AdSense (إذا ضُبط Publisher ID) 3) إعلان ذاتي
 export function AdBanner({ position = 'home' }: { position?: string }) {
   return (
     <>
       {/* إعلان Adsterra — نشط دائمًا */}
       <AdsterraBanner />
-      {/* إعلان AdSense — يظهر إذا ضُبط NEXT_PUBLIC_ADSENSE_ID */}
-      {ADSENSE_ID && <AdSenseBanner slot={position} />}
+      {/* إعلان Google AdSense — يظهر إذا ضُبط Publisher ID من لوحة الإدارة */}
+      <AdSenseBanner slot={position} />
       {/* إعلان ذاتي — يظهر إذا أضاف المسؤول إعلانًا */}
       <SelfAd position={position} />
     </>

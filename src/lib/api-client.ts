@@ -112,12 +112,9 @@ export async function adminImportBackup(data: any): Promise<{ ok: boolean; songs
   } catch (e: any) { return { ok: false, error: e.message } }
 }
 
-// ====== إعدادات التطبيق العامة (روابط التواصل الاجتماعي + Unity Ads) ======
-export type UnityAdsConfig = {
-  gameId: string
-  bannerPlacementId: string
-  rewardedPlacementId: string
-  interstitialPlacementId: string
+// ====== إعدادات التطبيق العامة (روابط التواصل الاجتماعي + Google AdSense) ======
+export type AdSenseConfig = {
+  publisherId: string
   enabled: boolean
   scriptUrl: string
 }
@@ -126,7 +123,7 @@ export type SocialLinks = {
   facebook: { url: string; name: string; handle: string }
   whatsapp: { url: string; name: string; handle: string }
   instagram: { url: string; name: string; handle: string }
-  unityAds: UnityAdsConfig
+  adsense: AdSenseConfig
 }
 
 export async function fetchSocialLinks(): Promise<SocialLinks> {
@@ -137,7 +134,7 @@ export async function adminFetchSettings(): Promise<{
   facebook: { url: string; handle: string }
   whatsapp: { url: string; handle: string }
   instagram: { url: string; handle: string }
-  unityAds: UnityAdsConfig
+  adsense: AdSenseConfig
 }> {
   return jfetch(`${API}/admin/settings`)
 }
@@ -146,7 +143,7 @@ export async function adminUpdateSettings(data: {
   facebook: { url: string; handle: string }
   whatsapp: { url: string; handle: string }
   instagram: { url: string; handle: string }
-  unityAds: UnityAdsConfig
+  adsense: AdSenseConfig
 }): Promise<{ ok: boolean; count?: number; error?: string }> {
   try {
     const res = await fetch(`${API}/admin/settings`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
